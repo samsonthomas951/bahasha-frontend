@@ -1,5 +1,5 @@
 // const API_BASE_URL = window.location.origin;
-const API_BASE_URL =  'https://f320123fd311.ngrok-free.app/api/v1'
+const API_BASE_URL =  'bahasha-production.up.railway.app/api/v1'
 // const API_BASE_URL = 'http://localhost:5000/api/v1'
 
 // Store form data - now includes dynamic categories
