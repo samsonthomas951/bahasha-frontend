@@ -1,5 +1,5 @@
 // const API_BASE_URL = window.location.origin;
-const API_BASE_URL =  'https://samson69.pythonanywhere.com/api/v1'
+const API_BASE_URL =  'https://b6f3243efdb7.ngrok-free.app/api/v1'
 // const API_BASE_URL = 'http://localhost:5000/api/v1'
 
 // Store form data - now includes dynamic categories
