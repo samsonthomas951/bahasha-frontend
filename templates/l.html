@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groups Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .animate-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .group-badge {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-enter {
+            animation: modalEnter 0.2s ease-out;
+        }
+        
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+        }
+        
+        .table-row:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-5">
+                <div class="flex items-center space-x-4">
+                    <div class="gradient-bg p-2 rounded-xl">
+                        <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Groups Management</h1>
+                        <p class="text-sm text-gray-500">Organize and manage your donation groups</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="syncGroups()" class="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all flex items-center space-x-2">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Sync</span>
+                    </button>
+                    <button onclick="openCreateGroupModal()" class="btn-primary px-5 py-2.5 text-sm font-semibold text-white rounded-xl shadow-lg flex items-center space-x-2">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>New Group</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Statistics Cards -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card rounded-2xl shadow-lg p-6 card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Total Groups</p>
+                        <p class="text-3xl font-bold text-gray-900" id="totalGroups">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-xl">
+                        <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card rounded-2xl shadow-lg p-6 card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Total Members</p>
+                        <p class="text-3xl font-bold text-gray-900" id="totalMembers">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 p-4 rounded-xl">
+                        <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card rounded-2xl shadow-lg p-6 card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Active Groups</p>
+                        <p class="text-3xl font-bold text-gray-900" id="activeGroups">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 p-4 rounded-xl">
+                        <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card rounded-2xl shadow-lg p-6 card-hover border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Total Donations</p>
+                        <p class="text-3xl font-bold text-gray-900">$<span id="totalDonations">0</span></p>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 p-4 rounded-xl">
+                        <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Groups Grid -->
+        <div id="groupsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Groups will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-4">
+                <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No groups yet</h3>
+            <p class="text-gray-500 mb-6">Create your first group to start organizing donations</p>
+            <button onclick="openCreateGroupModal()" class="btn-primary px-6 py-3 text-sm font-semibold text-white rounded-xl shadow-lg inline-flex items-center space-x-2">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Create Your First Group</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Create/Edit Group Modal -->
+    <div id="groupModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity fade-in" onclick="closeGroupModal()"></div>
+            <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative z-10 shadow-2xl modal-enter">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900" id="modalTitle">Create New Group</h3>
+                    <button onclick="closeGroupModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="groupForm" onsubmit="handleGroupSubmit(event)">
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Group Code</label>
+                            <input type="text" id="groupCode" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all" placeholder="e.g., AMS, AMO">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Group Name</label>
+                            <input type="text" id="groupName" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all" placeholder="Enter group name">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                            <textarea id="groupDescription" rows="3" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all resize-none" placeholder="Enter group description"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Color Theme</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="color" id="groupColor" value="#3B82F6" class="h-12 w-16 border-2 border-gray-200 rounded-xl cursor-pointer">
+                                <input type="text" id="groupColorText" value="#3B82F6" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex justify-end space-x-3">
+                        <button type="button" onclick="closeGroupModal()" class="px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-primary px-6 py-3 text-sm font-semibold text-white rounded-xl shadow-lg">
+                            <span id="submitButtonText">Create Group</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Members Modal -->
+    <div id="membersModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity fade-in" onclick="closeMembersModal()"></div>
+            <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[85vh] overflow-hidden relative z-10 shadow-2xl modal-enter">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900" id="membersModalTitle">Group Members</h3>
+                            <p class="text-sm text-gray-500 mt-1">Manage members and their contributions</p>
+                        </div>
+                        <button onclick="closeMembersModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="px-8 py-4 border-b border-gray-200 bg-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="showAddMemberForm()" class="px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl hover:shadow-lg transition-all">
+                                + Add Member
+                            </button>
+                            <button onclick="showBulkAddForm()" class="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">
+                                Bulk Add
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="memberSearch" placeholder="Search members..." class="pl-11 pr-4 py-2.5 w-64 border-2 border-gray-200 rounded-xl transition-all">
+                            <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Member Form -->
+                <div id="addMemberForm" class="hidden px-8 py-5 bg-blue-50 border-b border-blue-100 animate-in">
+                    <div class="flex items-end space-x-3">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="newMemberPhone" placeholder="+254..." class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Name</label>
+                            <input type="text" id="newMemberName" placeholder="Member name" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl">
+                        </div>
+                        <button onclick="addMemberToGroup()" class="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all">
+                            Add
+                        </button>
+                        <button onclick="hideAddMemberForm()" class="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bulk Add Form -->
+                <div id="bulkAddForm" class="hidden px-8 py-5 bg-green-50 border-b border-green-100 animate-in">
+                    <div class="space-y-3">
+                        <label class="block text-sm font-semibold text-gray-700">Add Multiple Members (Phone, Name - one per line)</label>
+                        <textarea id="bulkMembersData" rows="4" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl resize-none" placeholder="+254712345678, John Doe&#10;+254712345679, Jane Smith"></textarea>
+                        <div class="flex space-x-3">
+                            <button onclick="bulkAddMembers()" class="px-5 py-2.5 text-sm font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-all">
+                                Add All Members
+                            </button>
+                            <button onclick="hideBulkAddForm()" class="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-y-auto max-h-[50vh]">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Phone</th>
+                                <th class="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Donations</th>
+                                <th class="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Total</th>
+                                <th class="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody" class="bg-white divide-y divide-gray-100">
+                            <!-- Members will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl">
+            <div class="spinner mx-auto"></div>
+            <p class="text-gray-600 mt-4 text-sm font-medium">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-6 right-6 z-50 space-y-3 max-w-sm"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api/v1';
+        let groups = [];
+        let currentGroup = null;
+        let currentGroupMembers = [];
+        let editingGroupId = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuthenticated = await checkAuth();
+            if (!isAuthenticated) return;
+            
+            await loadGroups();
+            await loadStatistics();
+            
+            document.getElementById('groupColor').addEventListener('input', function(e) {
+                document.getElementById('groupColorText').value = e.target.value;
+            });
+            
+            document.getElementById('memberSearch').addEventListener('input', function(e) {
+                filterMembers(e.target.value);
+            });
+        });
+
+        async function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!data.valid) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        async function loadGroups() {
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/list`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    groups = data.groups;
+                    renderGroups();
+                } else {
+                    showNotification('error', 'Failed to load groups');
+                }
+            } catch (error) {
+                console.error('Error loading groups:', error);
+                showNotification('error', 'Error loading groups');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/statistics`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('totalGroups').textContent = data.summary.total_groups;
+                    document.getElementById('totalMembers').textContent = data.summary.total_members;
+                    document.getElementById('activeGroups').textContent = data.statistics.filter(s => s.group.is_active).length;
+                    document.getElementById('totalDonations').textContent = data.summary.total_donations.toFixed(2);
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        function renderGroups() {
+            const container = document.getElementById('groupsContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (groups.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            container.innerHTML = groups.map(group => `
+                <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden card-hover animate-in">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="flex items-center space-x-4">
+                                <div class="group-badge h-14 w-14 rounded-xl flex items-center justify-center font-bold text-lg" style="background: linear-gradient(135deg, ${group.color}20 0%, ${group.color}40 100%); color: ${group.color};">
+                                    ${group.code}
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-1">${group.name}</h3>
+                                    <p class="text-sm text-gray-500 line-clamp-1">${group.description || 'No description provided'}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="editGroup(${group.id})" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                <button onclick="confirmDeleteGroup(${group.id}, '${group.name}')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-xl mb-4">
+                            <div class="flex items-center space-x-2">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
+                                <span class="text-sm font-semibold text-gray-700">${group.member_count} members</span>
+                            </div>
+                            <span class="px-3 py-1 text-xs font-bold rounded-full ${group.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}">
+                                ${group.is_active ? '● Active' : '○ Inactive'}
+                            </span>
+                        </div>
+                        
+                        <button onclick="openMembersModal(${group.id})" class="w-full px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl hover:shadow-lg transition-all">
+                            Manage Members
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCreateGroupModal() {
+            editingGroupId = null;
+            document.getElementById('modalTitle').textContent = 'Create New Group';
+            document.getElementById('submitButtonText').textContent = 'Create Group';
+            document.getElementById('groupForm').reset();
+            document.getElementById('groupColor').value = '#3B82F6';
+            document.getElementById('groupColorText').value = '#3B82F6';
+            document.getElementById('groupModal').classList.remove('hidden');
+        }
+
+        function editGroup(groupId) {
+            const group = groups.find(g => g.id === groupId);
+            if (!group) return;
+            
+            editingGroupId = groupId;
+            document.getElementById('modalTitle').textContent = 'Edit Group';
+            document.getElementById('submitButtonText').textContent = 'Update Group';
+            document.getElementById('groupCode').value = group.code;
+            document.getElementById('groupName').value = group.name;
+            document.getElementById('groupDescription').value = group.description || '';
+            document.getElementById('groupColor').value = group.color;
+            document.getElementById('groupColorText').value = group.color;
+            document.getElementById('groupModal').classList.remove('hidden');
+        }
+
+        function closeGroupModal() {
+            document.getElementById('groupModal').classList.add('hidden');
+            editingGroupId = null;
+        }
+
+        async function handleGroupSubmit(event) {
+            event.preventDefault();
+            showLoading();
+            
+            const formData = {
+                code: document.getElementById('groupCode').value,
+                name: document.getElementById('groupName').value,
+                description: document.getElementById('groupDescription').value,
+                color: document.getElementById('groupColor').value
+            };
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const url = editingGroupId 
+                    ? `${API_BASE_URL}/groups/${editingGroupId}/update`
+                    : `${API_BASE_URL}/groups/create`;
+                const method = editingGroupId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('success', editingGroupId ? 'Group updated successfully' : 'Group created successfully');
+                    closeGroupModal();
+                    await loadGroups();
+                    await loadStatistics();
+                } else {
+                    showNotification('error', data.message || 'Operation failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An error occurred');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function confirmDeleteGroup(groupId, groupName) {
+            if (confirm(`Are you sure you want to delete the group "${groupName}"? This action cannot be undone.`)) {
+                await deleteGroup(groupId);
+            }
+        }
+
+        async function deleteGroup(groupId) {
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/${groupId}/delete?force=true`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('success', 'Group deleted successfully');
+                    await loadGroups();
+                    await loadStatistics();
+                } else {
+                    showNotification('error', data.message || 'Delete failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An error occurred');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function openMembersModal(groupId) {
+            currentGroup = groups.find(g => g.id === groupId);
+            if (!currentGroup) return;
+            
+            document.getElementById('membersModalTitle').textContent = `${currentGroup.name} Members`;
+            document.getElementById('membersModal').classList.remove('hidden');
+            
+            await loadGroupMembers(groupId);
+        }
+
+        function closeMembersModal() {
+            document.getElementById('membersModal').classList.add('hidden');
+            hideAddMemberForm();
+            hideBulkAddForm();
+            currentGroup = null;
+            currentGroupMembers = [];
+        }
+
+        async function loadGroupMembers(groupId) {
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    currentGroupMembers = data.members;
+                    renderMembers(currentGroupMembers);
+                }
+            } catch (error) {
+                console.error('Error loading members:', error);
+                showNotification('error', 'Failed to load members');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderMembers(members) {
+            const tbody = document.getElementById('membersTableBody');
+            
+            if (members.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-8 py-12 text-center">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-3">
+                                <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
+                            </div>
+                            <p class="text-gray-500 font-medium">No members found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = members.map(member => `
+                <tr class="table-row">
+                    <td class="px-8 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                                ${member.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span class="ml-3 text-sm font-semibold text-gray-900">${member.name}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-4 whitespace-nowrap text-sm text-gray-600">${member.phone_number}</td>
+                    <td class="px-8 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 text-xs font-bold bg-blue-100 text-blue-700 rounded-full">${member.donation_count}</span>
+                    </td>
+                    <td class="px-8 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${member.total_donated.toFixed(2)}</td>
+                    <td class="px-8 py-4 whitespace-nowrap text-sm">
+                        <button onclick="removeMemberFromGroup('${member.phone_number}')" class="text-red-600 hover:text-red-800 font-semibold hover:underline transition-colors">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterMembers(searchTerm) {
+            const filtered = currentGroupMembers.filter(member => 
+                member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                member.phone_number.includes(searchTerm)
+            );
+            renderMembers(filtered);
+        }
+
+        function showAddMemberForm() {
+            document.getElementById('addMemberForm').classList.remove('hidden');
+            document.getElementById('bulkAddForm').classList.add('hidden');
+        }
+
+        function hideAddMemberForm() {
+            document.getElementById('addMemberForm').classList.add('hidden');
+            document.getElementById('newMemberPhone').value = '';
+            document.getElementById('newMemberName').value = '';
+        }
+
+        async function addMemberToGroup() {
+            const phone = document.getElementById('newMemberPhone').value;
+            const name = document.getElementById('newMemberName').value;
+            
+            if (!phone) {
+                showNotification('error', 'Phone number is required');
+                return;
+            }
+            
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/${currentGroup.id}/add-member`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone_number: phone, name: name || 'Unknown' })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('success', 'Member added successfully');
+                    hideAddMemberForm();
+                    await loadGroupMembers(currentGroup.id);
+                    await loadGroups();
+                    await loadStatistics();
+                } else {
+                    showNotification('error', data.message || 'Failed to add member');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An error occurred');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showBulkAddForm() {
+            document.getElementById('bulkAddForm').classList.remove('hidden');
+            document.getElementById('addMemberForm').classList.add('hidden');
+        }
+
+        function hideBulkAddForm() {
+            document.getElementById('bulkAddForm').classList.add('hidden');
+            document.getElementById('bulkMembersData').value = '';
+        }
+
+        async function bulkAddMembers() {
+            const data = document.getElementById('bulkMembersData').value;
+            if (!data.trim()) {
+                showNotification('error', 'Please enter member data');
+                return;
+            }
+            
+            const members = data.split('\n').map(line => {
+                const parts = line.split(',').map(p => p.trim());
+                return { phone_number: parts[0], name: parts[1] || 'Unknown' };
+            }).filter(m => m.phone_number);
+            
+            if (members.length === 0) {
+                showNotification('error', 'No valid members found');
+                return;
+            }
+            
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/${currentGroup.id}/bulk-add-members`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ members })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('success', result.message);
+                    hideBulkAddForm();
+                    await loadGroupMembers(currentGroup.id);
+                    await loadGroups();
+                    await loadStatistics();
+                } else {
+                    showNotification('error', result.message || 'Bulk add failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An error occurred');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function removeMemberFromGroup(phoneNumber) {
+            if (!confirm('Remove this member from the group?')) return;
+            
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/${currentGroup.id}/remove-member`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone_number: phoneNumber })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('success', 'Member removed successfully');
+                    await loadGroupMembers(currentGroup.id);
+                    await loadGroups();
+                    await loadStatistics();
+                } else {
+                    showNotification('error', data.message || 'Failed to remove member');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An error occurred');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function syncGroups() {
+            if (!confirm('This will sync groups from existing donation data. Continue?')) return;
+            
+            showLoading();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE_URL}/groups/sync`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('success', data.message);
+                    await loadGroups();
+                    await loadStatistics();
+                } else {
+                    showNotification('error', data.message || 'Sync failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An error occurred during sync');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').classList.remove('hidden');
+        }
+
+        function hideLoading() {  
+            document.getElementById('loadingSpinner').classList.add('hidden');
+        }
+
+        function showNotification(type, message) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            const isSuccess = type === 'success';
+            
+            notification.className = `px-5 py-4 rounded-xl shadow-2xl transition-all transform translate-x-0 animate-in ${
+                isSuccess ? 'bg-white border-2 border-green-200' : 'bg-white border-2 border-red-200'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0 ${isSuccess ? 'text-green-600' : 'text-red-600'}">
+                        ${isSuccess ? 
+                            `<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>` :
+                            `<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>`
+                        }
+                    </div>
+                    <span class="text-sm font-semibold text-gray-900">${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
