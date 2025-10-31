@@ -1,3 +1,149 @@
+<!-- <!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>Stitch Design</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1193d4',
+              'background-light': '#f6f7f8',
+              'background-dark': '#101c22',
+            },
+            fontFamily: {
+              display: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+          },
+        },
+      };
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="flex h-screen">
+<aside class="flex flex-col w-96 border-r border-primary/20 dark:border-primary/30">
+<div class="p-4 border-b border-primary/20 dark:border-primary/30">
+<div class="relative">
+<input class="w-full pl-10 pr-4 py-2 rounded-lg bg-background-light dark:bg-background-dark text-black dark:text-white border border-primary/20 dark:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search" type="text"/>
+<div class="absolute left-3 top-1/2 -translate-y-1/2 text-black dark:text-white">
+<svg fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
+<path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+</svg>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<a class="flex items-center gap-4 p-4 hover:bg-primary/10 dark:hover:bg-primary/20" href="#">
+<img alt="Sarah's avatar" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAX7StTTGaaqy2SHJsqUuB_zdsqkmGPdwhWNQVXujfTChFh-jBH-esP0rTarsXAd1ieHonvDEimTOsqx4Wj8tDoXSJW-EZjBJ-3Lgi-0ahMw4VMx5WnanepbpmTs0GrfDHO-a6rpk_BkDjcDQQu-s_jGfQsbYdv47NfmXCuPOeS4gRo8yjiY9TcKV5uIWxV1QtbO-jMiijQIALhTXHa25ARyVFBhHy_GdoRcSqgtzWsn4MKutL30oIAG5CNjceOW4JbvJ-6KqsoBw"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-bold text-black dark:text-white">Sarah</p>
+<p class="text-sm text-black/50 dark:text-white/50">Yesterday</p>
+</div>
+<p class="text-sm text-black/70 dark:text-white/70">Hi, I'm having trouble...</p>
+</div>
+</a>
+<a class="flex items-center gap-4 p-4 hover:bg-primary/10 dark:hover:bg-primary/20" href="#">
+<img alt="David's avatar" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5w1KfqFsmTdc35Ixt-PAoawqMU8PescdxHYIErrUw1sY3je-4XmYm07qr3qQ7FjVyTHzhZwTloXKi0imrJezOUW5Uv30DKXtFTtTPEF_ffGuplETCsMeA6SkkuO89vl040GLifkuIqmm6YlCqDGQrkYLopjfxw_-iF-JrIqjjicuuY0YRiNQ1-aem1_-gZ-yC850Q9IIjjZKFbWf-GqjTppPWREjGofSias59drVcw6QKbTLnTDf9vqoInoVI_TQqzbYjHpChaI0"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-bold text-black dark:text-white">David</p>
+<p class="text-sm text-black/50 dark:text-white/50">Yesterday</p>
+</div>
+<p class="text-sm text-black/70 dark:text-white/70">Thank you!</p>
+</div>
+</a>
+<a class="flex items-center gap-4 p-4 bg-primary/10 dark:bg-primary/20" href="#">
+<img alt="Emily's avatar" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJrxWI_jgO9gh9b627C9a51Xe30fIZn0_58_s2xdPrNgYZa7qdjdVCxTL4bkg6KCOGrUliD8qs0HSW4ZK7Np1suyEeKAEW1CWQV5HwyrZtt6PjAqgfBLuJuV901fZg7fw0EdL_g8c-VNpcOsFuLqx2yZ2FKqcWdaFPftT_ZWa8ld071YrKd3cpu3XGH0wQfWXeXnA0Pv9qQhgTbPYmFOsuqMP0AB16F_pdxBkWlVRMX6yYAx7b_9CwqJL2dhtH2QKVOyFdpeL1uDo"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-bold text-black dark:text-white">Emily</p>
+<p class="text-sm text-black/50 dark:text-white/50">2d ago</p>
+</div>
+<p class="text-sm text-black/70 dark:text-white/70">You're welcome</p>
+</div>
+</a>
+<a class="flex items-center gap-4 p-4 hover:bg-primary/10 dark:hover:bg-primary/20" href="#">
+<img alt="Michael's avatar" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnZQ_8rxCCH8rHSCqMSnA0h9FGtMjH2Z5RubRyuJKo4NWNOpMuHrDId3f-kr002JEuphTXln1illljBbiNIE5cUgw8GEhZvH2QMxEh54s8V9x2Rl7HbRCBSnPup8-skiV5QczU_w17JKdNyqiL8GFiR6jjPqSQnK7xSN01JBbKrv6eKo_UZCcIrOkfMBF_X-x1daMrpCH1f7mXRItitpZRIHscSHzExeY2-G7823iywKjMBzaEEs4rryez6pP3ZCG66TX5TqOZxC8"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-bold text-black dark:text-white">Michael</p>
+<p class="text-sm text-black/50 dark:text-white/50">2d ago</p>
+</div>
+<p class="text-sm text-black/70 dark:text-white/70">Okay, I'll check it.</p>
+</div>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col">
+<header class="flex items-center justify-between p-4 border-b border-primary/20 dark:border-primary/30">
+<div class="flex items-center gap-4">
+<img alt="Sarah's avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAX7StTTGaaqy2SHJsqUuB_zdsqkmGPdwhWNQVXujfTChFh-jBH-esP0rTarsXAd1ieHonvDEimTOsqx4Wj8tDoXSJW-EZjBJ-3Lgi-0ahMw4VMx5WnanepbpmTs0GrfDHO-a6rpk_BkDjcDQQu-s_jGfQsbYdv47NfmXCuPOeS4gRo8yjiY9TcKV5uIWxV1QtbO-jMiijQIALhTXHa25ARyVFBhHy_GdoRcSqgtzWsn4MKutL30oIAG5CNjceOW4JbvJ-6KqsoBw"/>
+<div>
+<p class="font-bold text-lg text-black dark:text-white">Sarah</p>
+<p class="text-sm text-black/50 dark:text-white/50">Online</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-black dark:text-white p-2 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M128,128a12,12,0,1,1,12-12A12,12,0,0,1,128,128ZM128,64a12,12,0,1,0,12,12A12,12,0,0,0,128,64Zm0,128a12,12,0,1,0,12,12A12,12,0,0,0,128,192Z"></path>
+</svg>
+</button>
+<img alt="Treasurer's avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDikg-jDSl6mV_mvKtJSKV5jHU-azVEQgKhlLfG90p-q-fuyEWRWBmuzKuXs_H_RK6g7fPFgizty-6Tcz4pNW_cyfuyB-ewB1nwQ06JGirZdTcFWqeqqZqNl9Fx8Paey0nuVdK-whBuLNuGo2pQlWK9NG6dtNqhIBdo4Sb9ANqAvbK1b30l6MAw4dlJm6shsCeLNZ_ThC3aglpIQzTIaLYLWTqV0qLlZorLAH-_B13GiX2qvWy-VBL4LtPXvhe5_txzJKu3Zk7xdA"/>
+</div>
+</header>
+<div class="flex-1 p-6 overflow-y-auto space-y-6">
+<div class="flex items-start gap-4">
+<img alt="Sarah's avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPuCP3YguJX0pj8Ym2Lr3QhbzIcUQNes-0JZ87pmWZr126oHy90b2Ed2HR6xMlWsr3RjsK0QAJLOHZu6_HXRIp2OeKcHLdPwt7fZ96gnmUfxOPjOKTXaY3vnPefqUZs0ZV4wjSW3gNAwtZfQJnxFC8icR8vvL5D_8JBvRSpMpT5ZqFa3X8GPo-75Q7L1IOrgxAZJB1bjs87o0J0wDHVbyu3nrifYnbo8wnPYK8vM8trt7orNOD2rNqAVAGZlL112gcbBCv1LZPnGM"/>
+<div class="space-y-1">
+<div class="bg-white dark:bg-background-dark p-3 rounded-lg rounded-tl-none max-w-lg">
+<p class="text-black dark:text-white">Hi, I'm having trouble making my contribution. Can you help?</p>
+</div>
+<span class="text-xs text-black/50 dark:text-white/50">10:30 AM</span>
+</div>
+</div>
+<div class="flex items-start gap-4 justify-end">
+<div class="space-y-1 text-right">
+<div class="bg-primary text-white p-3 rounded-lg rounded-tr-none max-w-lg">
+<p>Of course, Sarah. What seems to be the issue?</p>
+</div>
+<div class="flex items-center justify-end gap-1 text-xs text-black/50 dark:text-white/50">
+<span>10:31 AM</span>
+<svg class="text-primary" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+<path d="M232.24,80.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,223.76,71.76a6,6,0,0,1,8.48,8.48ZM176.24,80.24l-80,80a6,6,0,0,1-8.48-8.48L167.76,71.76a6,6,0,1,1,8.48,8.48Z"></path>
+</svg>
+</div>
+</div>
+<img alt="Treasurer's avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTFjDkLcilPB4rrSwFjEt69ASdZ1Fi7I_c2BpNVqKEQ85D9ZxHZBQUtZv_p5W2qTomLDjTqgnb3rwdSxnN3_M2_684yB_auMI4siyYtskdrpB4Vmtzumg1Wtc8uU69KvzMFSpEjG9f2jlNgXRGjDPIaBsojqjlALkHRneuwWolhncTUmS7Dy5w42gTnOsRe2H_7y1Wh1tJ8mLP4Q2eOQcxkfu0__5b08P1SJXSj7_YIjRP2fRAsvinvxV-YONt0B_sH0BpWjavVWo"/>
+</div>
+</div>
+<div class="p-4 bg-background-light dark:bg-background-dark border-t border-primary/20 dark:border-primary/30">
+<div class="flex items-center gap-4">
+<img alt="Treasurer's avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnAfPzVQEtIwpQCkqhjMnKvFm_lW-Cnz9MSW5WLg9c7qxZBGWGBCCLcSZpK_X6lDGd4VqeakHPkAAsfwYnVEs22Cqb1s6bYZaYzwicACF29z4XhON7nzEPuV6AnO6zHq2k0LjLV2DlvLbHln-WaB4QhsCzpBGFG-K8s6uaLAa9LsjZB5Cxcyi9CIWFSUpPFvYq6CnbpQZXefbLOnPcS_sl3dlzYG03-BkX715iHsnVarORVTCwsm9gwZ1kA2y3HMy5u7qB6sFe3_g"/>
+<div class="flex-1 relative">
+<input class="w-full pl-4 pr-24 py-2 rounded-lg bg-white dark:bg-black/20 text-black dark:text-white border border-primary/20 dark:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Type a message..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+<button class="p-2 rounded-full text-black/70 dark:text-white/70 hover:bg-primary/10 dark:hover:bg-primary/20">
+<svg fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
+<path d="M209.66,122.34a8,8,0,0,1,0,11.32l-82.05,82a56,56,0,0,1-79.2-79.21L147.67,35.73a40,40,0,1,1,56.61,56.55L105,193A24,24,0,1,1,71,159L154.3,74.38A8,8,0,1,1,165.7,85.6L82.39,170.31a8,8,0,1,0,11.27,11.36L192.93,81A24,24,0,1,0,159,47L59.76,147.68a40,40,0,1,0,56.53,56.62l82.06-82A8,8,0,0,1,209.66,122.34Z"></path>
+</svg>
+</button>
+<button class="px-4 py-1.5 rounded-lg bg-primary text-white font-semibold">Send</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +153,6 @@
     <title>Church Messaging System</title>
     <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- ADD THIS: Socket.IO Client Library -->
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -189,67 +333,16 @@
         let conversations = [];
         let messages = [];
         let currentFilter = 'all';
+        let pollingInterval = null;
         let selectedMessageId = null;
-
-        // NEW: Initialize Socket.IO connection
-        const socket = io('http://localhost:5000');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadConversations();
+            startPolling();
             setupEventListeners();
-            setupSocketListeners(); // NEW: Setup real-time listeners
         });
-
-        // NEW: Setup Socket.IO event listeners
-        function setupSocketListeners() {
-            socket.on('connect', () => {
-                console.log('Successfully connected to real-time server!');
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Disconnected from real-time server.');
-            });
-
-            socket.on('new_message', (newMessage) => {
-                console.log('Received new message:', newMessage);
-                // If the new message belongs to the currently open conversation, add it to the view
-                if (currentConversation && currentConversation.conversation_id === newMessage.conversation_id) {
-                    messages.push(newMessage);
-                    renderMessages();
-                    scrollToBottom();
-                }
-            });
-
-            socket.on('update_conversation', (updatedConversation) => {
-                console.log('Received conversation update:', updatedConversation);
-                const index = conversations.findIndex(c => c.conversation_id === updatedConversation.conversation_id);
-                
-                if (index !== -1) {
-                    // Update existing conversation
-                    conversations[index] = updatedConversation;
-                } else {
-                    // Add new conversation to the top
-                    conversations.unshift(updatedConversation);
-                }
-                
-                // Re-render the list to show changes
-                renderConversations();
-                updateStats(); // Update stats like total unread count
-            });
-            
-            socket.on('message_status_update', (updatedMessage) => {
-                console.log('Received message status update:', updatedMessage);
-                if (currentConversation && currentConversation.conversation_id === updatedMessage.conversation_id) {
-                    const messageIndex = messages.findIndex(m => m.id === updatedMessage.id || m.whatsapp_message_id === updatedMessage.whatsapp_message_id);
-                    if (messageIndex !== -1) {
-                        messages[messageIndex] = updatedMessage;
-                        renderMessages(); // Re-render to show the new status icon
-                    }
-                }
-            });
-        }
 
         // Authentication Check
         async function checkAuth() {
@@ -312,11 +405,7 @@
         // Load Conversations
         async function loadConversations() {
             try {
-                // Only show loading spinner on initial load or filter changes, not for real-time updates
-                if (conversations.length === 0) {
-                    showLoading(true);
-                }
-                
+                showLoading(true);
                 const params = new URLSearchParams();
                 
                 if (currentFilter === 'archived') {
@@ -346,25 +435,32 @@
         function renderConversations() {
             const container = document.getElementById('conversations-list');
             
-            // Sort conversations by the most recent message time
-            conversations.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time));
-
             if (conversations.length === 0) {
-                container.innerHTML = `<div class="p-4 text-center text-gray-500 dark:text-gray-400"><p>No conversations found</p></div>`;
+                container.innerHTML = `
+                    <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                        <p>No conversations found</p>
+                    </div>
+                `;
                 return;
             }
 
             container.innerHTML = conversations.map(conv => {
                 const isActive = currentConversation?.conversation_id === conv.conversation_id;
-                const unreadBadge = conv.unread_count > 0 ? `<span class="bg-primary text-white text-xs rounded-full px-2 py-1">${conv.unread_count}</span>` : '';
-                const lastMessagePreview = conv.last_message_content || '[No messages yet]';
+                const unreadBadge = conv.unread_count > 0 ? `
+                    <span class="bg-primary text-white text-xs rounded-full px-2 py-1">
+                        ${conv.unread_count}
+                    </span>
+                ` : '';
+
+                const lastMessagePreview = conv.last_message?.content || 
+                    (conv.last_message?.direction === 'outbound' ? 'You: ' : '') + 
+                    '[Media]';
 
                 return `
                     <a 
-                        class="flex items-center gap-4 p-4 hover:bg-primary/10 dark:hover:bg-primary/20 cursor-pointer ${isActive ? 'bg-primary/10 dark:bg-primary/20' : ''}" 
+                        class="flex items-center gap-4 p-4 hover:bg-primary/10 dark:hover:bg-primary/20 ${isActive ? 'bg-primary/10 dark:bg-primary/20' : ''}" 
                         href="#"
                         onclick="selectConversation('${conv.conversation_id}'); return false;"
-                        id="conv-${conv.conversation_id}"
                     >
                         <div class="relative">
                             <img 
@@ -376,15 +472,22 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start">
-                                <p class="font-bold text-black dark:text-white truncate">${conv.contact_name || conv.phone_number}</p>
+                                <p class="font-bold text-black dark:text-white truncate">
+                                    ${conv.contact_name || conv.phone_number}
+                                </p>
                                 <div class="flex flex-col items-end gap-1">
-                                    <p class="text-xs text-black/50 dark:text-white/50">${formatTime(conv.last_message_time)}</p>
+                                    <p class="text-xs text-black/50 dark:text-white/50">
+                                        ${formatTime(conv.last_message?.time)}
+                                    </p>
                                     ${unreadBadge}
                                 </div>
                             </div>
-                            <p class="text-sm text-black/70 dark:text-white/70 truncate">${lastMessagePreview}</p>
+                            <p class="text-sm text-black/70 dark:text-white/70 truncate">
+                                ${lastMessagePreview}
+                            </p>
                         </div>
-                    </a>`;
+                    </a>
+                `;
             }).join('');
         }
 
@@ -396,26 +499,30 @@
                 
                 if (!currentConversation) return;
 
+                // Update UI
                 document.getElementById('no-conversation').classList.add('hidden');
                 document.getElementById('active-conversation').classList.remove('hidden');
 
-                document.getElementById('chat-name').textContent = currentConversation.contact_name || currentConversation.phone_number;
+                // Update header
+                document.getElementById('chat-name').textContent = 
+                    currentConversation.contact_name || currentConversation.phone_number;
                 document.getElementById('chat-status').textContent = currentConversation.phone_number;
-                document.getElementById('chat-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentConversation.contact_name || currentConversation.phone_number)}&background=1193d4&color=fff`;
-                
-                document.getElementById('star-icon').setAttribute('fill', currentConversation.is_starred ? 'currentColor' : 'none');
+                document.getElementById('chat-avatar').src = 
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(currentConversation.contact_name || currentConversation.phone_number)}&background=1193d4&color=fff`;
 
-                await loadMessages(conversationId);
-                
-                // If there were unread messages, update the conversation state and re-render
-                if (currentConversation.unread_count > 0) {
-                    currentConversation.unread_count = 0;
-                    renderConversations();
-                    updateStats();
+                // Update star icon
+                const starIcon = document.getElementById('star-icon');
+                if (currentConversation.is_starred) {
+                    starIcon.setAttribute('fill', 'currentColor');
                 } else {
-                    renderConversations();
+                    starIcon.setAttribute('fill', 'none');
                 }
 
+                // Load messages
+                await loadMessages(conversationId);
+                
+                // Re-render conversations to update active state
+                renderConversations();
             } catch (error) {
                 console.error('Error selecting conversation:', error);
                 showError('Failed to load conversation');
@@ -428,7 +535,7 @@
         async function loadMessages(conversationId) {
             try {
                 const data = await apiCall(`/messages/conversations/${conversationId}/messages`);
-                messages = data.messages.reverse();
+                messages = data.messages.reverse(); // Reverse to show oldest first
                 renderMessages();
                 scrollToBottom();
             } catch (error) {
@@ -437,22 +544,37 @@
             }
         }
 
-        // Render Messages (no changes needed here)
+        // Render Messages
         function renderMessages() {
             const container = document.getElementById('messages-container');
+            
             if (messages.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400"><p>No messages yet. Start a conversation!</p></div>`;
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400">
+                        <p>No messages yet. Start a conversation!</p>
+                    </div>
+                `;
                 return;
             }
+
             container.innerHTML = messages.map(msg => {
                 const isOutbound = msg.direction === 'outbound';
                 const messageContent = renderMessageContent(msg);
                 const statusIcon = renderStatusIcon(msg);
+
                 return `
-                    <div class="flex items-start gap-4 ${isOutbound ? 'justify-end' : ''}" oncontextmenu="showContextMenu(event, '${msg.id}'); return false;">
-                        ${!isOutbound ? `<img alt="Sender's avatar" class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(msg.sender_name || msg.phone_number)}&background=1193d4&color=fff"/>` : ''}
+                    <div class="flex items-start gap-4 ${isOutbound ? 'justify-end' : ''}" 
+                         oncontextmenu="showContextMenu(event, '${msg.id}'); return false;">
+                        ${!isOutbound ? `
+                            <img 
+                                alt="Sender's avatar" 
+                                class="w-10 h-10 rounded-full" 
+                                src="https://ui-avatars.com/api/?name=${encodeURIComponent(msg.sender_name || msg.phone_number)}&background=1193d4&color=fff"
+                            />
+                        ` : ''}
                         <div class="space-y-1 ${isOutbound ? 'text-right' : ''} max-w-lg">
-                            <div class="${isOutbound ? 'bg-primary text-white' : 'bg-white dark:bg-background-dark text-black dark:text-white'} p-3 rounded-lg ${isOutbound ? 'rounded-tr-none' : 'rounded-tl-none'}">
+                            <div class="${isOutbound ? 'bg-primary text-white' : 'bg-white dark:bg-background-dark text-black dark:text-white'} 
+                                        p-3 rounded-lg ${isOutbound ? 'rounded-tr-none' : 'rounded-tl-none'}">
                                 ${msg.reply_to_message_id ? '<div class="text-xs opacity-75 mb-2">↩ Reply</div>' : ''}
                                 ${messageContent}
                             </div>
@@ -461,39 +583,149 @@
                                 ${isOutbound ? statusIcon : ''}
                             </div>
                         </div>
-                        ${isOutbound ? `<img alt="Your avatar" class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name=You&background=1193d4&color=fff"/>` : ''}
-                    </div>`;
+                        ${isOutbound ? `
+                            <img 
+                                alt="Your avatar" 
+                                class="w-10 h-10 rounded-full" 
+                                src="https://ui-avatars.com/api/?name=You&background=1193d4&color=fff"
+                            />
+                        ` : ''}
+                    </div>
+                `;
             }).join('');
         }
-        
-        // Render Message Content (no changes needed here)
-        function renderMessageContent(msg) { /* ... same as before ... */ }
-        
-        // Render Status Icon (no changes needed here)
-        function renderStatusIcon(msg) { /* ... same as before ... */ }
 
-        // Send Message - MODIFIED
+        // Render Message Content Based on Type
+        function renderMessageContent(msg) {
+            switch(msg.message_type) {
+                case 'text':
+                    return `<p>${escapeHtml(msg.content || '')}</p>`;
+                
+                case 'image':
+                    return `
+                        <img src="${msg.media_url}" alt="Image" class="rounded max-w-xs cursor-pointer" onclick="openMedia('${msg.media_url}')"/>
+                        ${msg.content ? `<p class="mt-2">${escapeHtml(msg.content)}</p>` : ''}
+                    `;
+                
+                case 'video':
+                    return `
+                        <video controls class="rounded max-w-xs">
+                            <source src="${msg.media_url}" type="${msg.media_mime_type || 'video/mp4'}">
+                        </video>
+                        ${msg.content ? `<p class="mt-2">${escapeHtml(msg.content)}</p>` : ''}
+                    `;
+                
+                case 'audio':
+                    return `
+                        <audio controls class="max-w-xs">
+                            <source src="${msg.media_url}" type="${msg.media_mime_type || 'audio/mpeg'}">
+                        </audio>
+                    `;
+                
+                case 'document':
+                    return `
+                        <div class="flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 100-2H9a1 1 0 100 2h2a1 1 0 100-2h.5A2 2 0 0116 5v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="font-medium">Document</p>
+                                <a href="${msg.media_url}" target="_blank" class="text-xs text-blue-500 hover:underline">Download</a>
+                            </div>
+                        </div>
+                        ${msg.content ? `<p class="mt-2">${escapeHtml(msg.content)}</p>` : ''}
+                    `;
+                
+                case 'location':
+                    return `
+                        <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                            <p class="font-medium">${msg.location?.name || 'Location'}</p>
+                            ${msg.location?.address ? `<p class="text-sm">${msg.location.address}</p>` : ''}
+                            <a href="https://maps.google.com/?q=${msg.location?.latitude},${msg.location?.longitude}" 
+                               target="_blank" 
+                               class="text-xs text-blue-500 hover:underline">View on Maps</a>
+                        </div>
+                    `;
+                
+                case 'template':
+                    return `
+                        <div class="italic">
+                            <p>Template: ${msg.template_name}</p>
+                            ${msg.content ? `<p>${escapeHtml(msg.content)}</p>` : ''}
+                        </div>
+                    `;
+                
+                default:
+                    return `<p class="italic">Unsupported message type: ${msg.message_type}</p>`;
+            }
+        }
+
+        // Render Status Icon
+        function renderStatusIcon(msg) {
+            if (msg.direction !== 'outbound') return '';
+
+            if (msg.status === 'failed') {
+                return `
+                    <svg class="text-red-500" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Failed">
+                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z"></path>
+                    </svg>
+                `;
+            } else if (msg.status === 'read') {
+                return `
+                    <svg class="text-blue-500" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Read">
+                        <path d="M232.24,80.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,223.76,71.76a6,6,0,0,1,8.48,8.48ZM176.24,80.24l-80,80a6,6,0,0,1-8.48-8.48L167.76,71.76a6,6,0,1,1,8.48,8.48Z"></path>
+                    </svg>
+                `;
+            } else if (msg.status === 'delivered') {
+                return `
+                    <svg class="text-gray-500" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Delivered">
+                        <path d="M232.24,80.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,223.76,71.76a6,6,0,0,1,8.48,8.48Z"></path>
+                    </svg>
+                `;
+            } else if (msg.status === 'sent') {
+                return `
+                    <svg class="text-gray-400" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Sent">
+                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
+                    </svg>
+                `;
+            }
+
+            return `
+                <svg class="text-gray-300 animate-spin" fill="none" height="16" viewBox="0 0 24 24" width="16" title="Sending">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            `;
+        }
+
+        // Send Message
         async function sendMessage() {
             const input = document.getElementById('message-input');
             const content = input.value.trim();
+
             if (!content || !currentConversation) return;
 
             try {
+                // Clear input immediately for better UX
                 input.value = '';
+                
+                // Add optimistic message
                 const optimisticMessage = {
                     id: 'temp-' + Date.now(),
                     direction: 'outbound',
                     content: content,
                     message_type: 'text',
                     status: 'pending',
-                    created_at: new Date().toISOString(),
-                    conversation_id: currentConversation.conversation_id
+                    created_at: new Date().toISOString()
                 };
+                
                 messages.push(optimisticMessage);
                 renderMessages();
                 scrollToBottom();
 
-                const data = await apiCall('/messages/send', {
+                // Send to API
+                const data = await apiCall('/messages/messages/send', {
                     method: 'POST',
                     body: JSON.stringify({
                         phone_number: currentConversation.phone_number,
@@ -502,23 +734,27 @@
                     })
                 });
 
-                // Replace optimistic message with real one from the server
+                // Replace optimistic message with real one
                 const index = messages.findIndex(m => m.id === optimisticMessage.id);
                 if (index !== -1) {
                     messages[index] = data.message;
                 }
+                
                 renderMessages();
-                // REMOVED: No need to manually reload conversations, Socket.IO will handle it.
-                // await loadConversations(); 
+                
+                // Update conversation list
+                await loadConversations();
             } catch (error) {
                 console.error('Error sending message:', error);
                 showError('Failed to send message');
+                
+                // Remove optimistic message on error
                 messages = messages.filter(m => !m.id.startsWith('temp-'));
                 renderMessages();
             }
         }
 
-        // Handle Enter Key (no changes)
+        // Handle Enter Key
         function handleKeyPress(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -526,30 +762,46 @@
             }
         }
 
-        // Filter Conversations (no changes)
-        function filterConversations(filter, event) {
+        // Filter Conversations
+        function filterConversations(filter) {
             currentFilter = filter;
+            
+            // Update filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('bg-primary', 'text-white');
                 btn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
             });
-            event.target.classList.add('bg-primary', 'text-white');
+            
             event.target.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+            event.target.classList.add('bg-primary', 'text-white');
+            
             loadConversations();
         }
 
         // Toggle Star
         async function toggleStar() {
             if (!currentConversation) return;
+
             try {
                 const newStarState = !currentConversation.is_starred;
+                
                 await apiCall(`/messages/conversations/${currentConversation.conversation_id}/star`, {
                     method: 'PUT',
                     body: JSON.stringify({ star: newStarState })
                 });
+
                 currentConversation.is_starred = newStarState;
-                document.getElementById('star-icon').setAttribute('fill', newStarState ? 'currentColor' : 'none');
-                renderConversations(); // Update list immediately
+                
+                // Update star icon
+                const starIcon = document.getElementById('star-icon');
+                if (newStarState) {
+                    starIcon.setAttribute('fill', 'currentColor');
+                } else {
+                    starIcon.setAttribute('fill', 'none');
+                }
+
+                // Reload conversations to update list
+                await loadConversations();
             } catch (error) {
                 console.error('Error toggling star:', error);
                 showError('Failed to update star status');
@@ -559,21 +811,26 @@
         // Toggle Archive
         async function toggleArchive() {
             if (!currentConversation) return;
+
             try {
                 const newArchiveState = !currentConversation.is_archived;
+                
                 await apiCall(`/messages/conversations/${currentConversation.conversation_id}/archive`, {
                     method: 'PUT',
                     body: JSON.stringify({ archive: newArchiveState })
                 });
-                
-                // Remove the conversation from the list and reset view
-                conversations = conversations.filter(c => c.conversation_id !== currentConversation.conversation_id);
-                currentConversation = null;
-                document.getElementById('no-conversation').classList.remove('hidden');
-                document.getElementById('active-conversation').classList.add('hidden');
-                renderConversations();
-                updateStats();
 
+                currentConversation.is_archived = newArchiveState;
+                
+                // Clear current conversation if archiving
+                if (newArchiveState) {
+                    currentConversation = null;
+                    document.getElementById('no-conversation').classList.remove('hidden');
+                    document.getElementById('active-conversation').classList.add('hidden');
+                }
+
+                // Reload conversations
+                await loadConversations();
             } catch (error) {
                 console.error('Error toggling archive:', error);
                 showError('Failed to update archive status');
@@ -581,20 +838,43 @@
         }
 
         // Update Stats
-        function updateStats() {
-            document.getElementById('total-conversations').textContent = conversations.length;
-            const totalUnread = conversations.reduce((sum, conv) => sum + (conv.unread_count || 0), 0);
-            document.getElementById('total-unread').textContent = totalUnread;
+        async function updateStats() {
+            try {
+                const data = await apiCall('/messages/messages/stats');
+                
+                document.getElementById('total-conversations').textContent = 
+                    data.active_conversations || '0';
+                    
+                const totalUnread = conversations.reduce((sum, conv) => sum + (conv.unread_count || 0), 0);
+                document.getElementById('total-unread').textContent = totalUnread;
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
         }
 
-        // REMOVED POLLING FUNCTIONS
-        // function startPolling() { ... }
-        // document.addEventListener('visibilitychange', ...);
+        // Polling for new messages
+        function startPolling() {
+            // Poll every 5 seconds for new messages
+            pollingInterval = setInterval(async () => {
+                if (currentConversation) {
+                    await loadMessages(currentConversation.conversation_id);
+                }
+                await loadConversations();
+            }, 5000);
+        }
 
-        // All other functions (setupEventListeners, context menu, utilities) remain the same...
+        // Stop polling when page is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(pollingInterval);
+            } else {
+                startPolling();
+            }
+        });
 
         // Setup Event Listeners
         function setupEventListeners() {
+            // Search input
             const searchInput = document.getElementById('search-input');
             let searchTimeout;
             searchInput.addEventListener('input', (e) => {
@@ -603,48 +883,68 @@
                     loadConversations();
                 }, 500);
             });
+
+            // Auto-resize message input
             const messageInput = document.getElementById('message-input');
             messageInput.addEventListener('input', () => {
                 messageInput.style.height = 'auto';
                 messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
             });
+
+            // Close context menu on click outside
             document.addEventListener('click', () => {
                 document.getElementById('context-menu').classList.add('hidden');
             });
         }
+
+        // Context Menu
         function showContextMenu(event, messageId) {
             event.preventDefault();
             selectedMessageId = messageId;
+            
             const menu = document.getElementById('context-menu');
             menu.style.left = event.pageX + 'px';
             menu.style.top = event.pageY + 'px';
             menu.classList.remove('hidden');
         }
+
+        // Delete Message
         async function deleteMessage() {
+            // Note: This would need a backend endpoint to actually delete messages
             console.log('Delete message:', selectedMessageId);
             document.getElementById('context-menu').classList.add('hidden');
         }
+
+        // Copy Message
         function copyMessage() {
-            const message = messages.find(m => m.id.toString() === selectedMessageId);
+            const message = messages.find(m => m.id === selectedMessageId);
             if (message && message.content) {
                 navigator.clipboard.writeText(message.content);
                 showToast('Message copied to clipboard');
             }
             document.getElementById('context-menu').classList.add('hidden');
         }
+
+        // Reply to Message
         function replyToMessage() {
-            const message = messages.find(m => m.id.toString() === selectedMessageId);
+            const message = messages.find(m => m.id === selectedMessageId);
             if (message) {
-                document.getElementById('message-input').focus();
+                const input = document.getElementById('message-input');
+                input.focus();
+                // You could add reply UI here
             }
             document.getElementById('context-menu').classList.add('hidden');
         }
+
+        // Utility Functions
         function formatTime(timestamp) {
             if (!timestamp) return '';
+            
             const date = new Date(timestamp);
             const now = new Date();
             const diff = now - date;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
             if (days === 0) {
                 return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             } else if (days === 1) {
@@ -655,15 +955,18 @@
                 return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             }
         }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
+
         function scrollToBottom() {
             const container = document.getElementById('messages-container');
             container.scrollTop = container.scrollHeight;
         }
+
         function showLoading(show) {
             const overlay = document.getElementById('loading-overlay');
             if (show) {
@@ -672,47 +975,33 @@
                 overlay.classList.add('hidden');
             }
         }
+
         function showError(message) {
+            // You could implement a toast notification here
             console.error(message);
             alert(message);
         }
+
         function showToast(message) {
+            // Simple toast implementation
             const toast = document.createElement('div');
             toast.className = 'fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-lg z-50';
             toast.textContent = message;
             document.body.appendChild(toast);
+            
             setTimeout(() => {
                 toast.remove();
             }, 3000);
         }
+
         function openMedia(url) {
             window.open(url, '_blank');
         }
-        window.addEventListener('beforeunload', () => {
-            socket.disconnect(); // Disconnect socket on page unload
-        });
 
-        // Hiding these functions as they are large and unchanged
-        renderMessageContent = function(msg) {
-            switch(msg.message_type) {
-                case 'text': return `<p>${escapeHtml(msg.content || '')}</p>`;
-                case 'image': return `<img src="${msg.media_url}" alt="Image" class="rounded max-w-xs cursor-pointer" onclick="openMedia('${msg.media_url}')"/>${msg.content ? `<p class="mt-2">${escapeHtml(msg.content)}</p>` : ''}`;
-                case 'video': return `<video controls class="rounded max-w-xs"><source src="${msg.media_url}" type="${msg.media_mime_type || 'video/mp4'}"></video>${msg.content ? `<p class="mt-2">${escapeHtml(msg.content)}</p>` : ''}`;
-                case 'audio': return `<audio controls class="max-w-xs"><source src="${msg.media_url}" type="${msg.media_mime_type || 'audio/mpeg'}"></audio>`;
-                case 'document': return `<div class="flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 100-2H9a1 1 0 100 2h2a1 1 0 100-2h.5A2 2 0 0116 5v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"></path></svg><div class="flex-1"><p class="font-medium">Document</p><a href="${msg.media_url}" target="_blank" class="text-xs text-blue-500 hover:underline">Download</a></div></div>${msg.content ? `<p class="mt-2">${escapeHtml(msg.content)}</p>` : ''}`;
-                case 'location': return `<div class="p-2 bg-gray-100 dark:bg-gray-700 rounded"><p class="font-medium">${msg.location?.name || 'Location'}</p>${msg.location?.address ? `<p class="text-sm">${msg.location.address}</p>` : ''}<a href="https://maps.google.com/?q=${msg.location?.latitude},${msg.location?.longitude}" target="_blank" class="text-xs text-blue-500 hover:underline">View on Maps</a></div>`;
-                case 'template': return `<div class="italic"><p>Template: ${msg.template_name}</p>${msg.content ? `<p>${escapeHtml(msg.content)}</p>` : ''}</div>`;
-                default: return `<p class="italic">Unsupported message type: ${msg.message_type}</p>`;
-            }
-        }
-        renderStatusIcon = function(msg) {
-            if (msg.direction !== 'outbound') return '';
-            if (msg.status === 'failed') { return `<svg class="text-red-500" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Failed"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z"></path></svg>`; } 
-            else if (msg.status === 'read') { return `<svg class="text-blue-500" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Read"><path d="M232.24,80.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,223.76,71.76a6,6,0,0,1,8.48,8.48ZM176.24,80.24l-80,80a6,6,0,0,1-8.48-8.48L167.76,71.76a6,6,0,1,1,8.48,8.48Z"></path></svg>`; } 
-            else if (msg.status === 'delivered') { return `<svg class="text-gray-500" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Delivered"><path d="M232.24,80.24l-128,128a6,6,0,0,1-8.48,0l-56-56a6,6,0,0,1,8.48-8.48L96,191.51,223.76,71.76a6,6,0,0,1,8.48,8.48Z"></path></svg>`; } 
-            else if (msg.status === 'sent') { return `<svg class="text-gray-400" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" title="Sent"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path></svg>`; }
-            return `<svg class="text-gray-300 animate-spin" fill="none" height="16" viewBox="0 0 24 24" width="16" title="Sending"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-        }
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            clearInterval(pollingInterval);
+        });
     </script>
 </body>
 </html>

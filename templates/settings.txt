@@ -5,7 +5,7 @@
     <title>ChurchApp Settings</title>
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <script>
@@ -167,7 +167,7 @@
                     </section>
                     
                     <div class="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-800">
-                        <button id="save-button" class="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                        <button class="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
                             Save Changes
                         </button>
                     </div>
@@ -194,12 +194,7 @@
 
     <script>
         // Configuration
-        const API_BASE_URL = 'http://localhost:5000/api/v1';
-        
-        // Get DOM elements
-        const frequencySelect = document.getElementById('frequency');
-        const recipientsInput = document.getElementById('recipients');
-        const saveButton = document.getElementById('save-button');
+        const API_BASE_URL = 'http://localhost:5000/api/v1'; // Update this with your backend URL
         
         // Check authentication
         async function checkAuth() {
@@ -216,22 +211,6 @@
                     }
                 });
                 
-                // Check if response is ok
-                if (!response.ok) {
-                    console.error('Auth verify failed:', response.status, response.statusText);
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                // Check content type
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    console.error('Expected JSON but got:', contentType);
-                    alert('Server error: Invalid response format. Please check if the backend is running.');
-                    return;
-                }
-                
                 const data = await response.json();
                 if (!data.valid) {
                     localStorage.clear();
@@ -241,7 +220,7 @@
                 }
             } catch (error) {
                 console.error('Auth check error:', error);
-                alert(`Authentication error: ${error.message}\n\nPlease ensure the backend server is running at ${API_BASE_URL}`);
+                window.location.href = 'login.html';
             }
         }                     
         
@@ -269,19 +248,15 @@
                 document.getElementById('profile-last-login').textContent = 'First login';
             }
 
-            // Set frequency select - capitalize first letter to match option values
-            if (user.report_frequency) {
-                frequencySelect.value = user.report_frequency.charAt(0).toUpperCase() + user.report_frequency.slice(1);
-            } else {
-                frequencySelect.value = 'Weekly';
-            }
+            frequencySelect.value = user.report_frequency ? user.report_frequency.charAt(0).toUpperCase() + user.report_frequency.slice(1) : 'Weekly';
 
-            // Set recipients input - use report_recipients if available, otherwise user's email
+            // Set recipients input. Default to user's email if not set.
             recipientsInput.value = user.report_recipients || user.email || '';
+
+            document.getElementById('recipients').value = user.email || '';
         }
 
-        // Save settings
-        async function saveSettings() {
+                async function saveSettings() {
             const token = localStorage.getItem('authToken');
             const frequency = frequencySelect.value.toLowerCase();
             const recipients = recipientsInput.value.trim();
@@ -307,19 +282,10 @@
                     }),
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Check content type
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Server returned non-JSON response');
-                }
-
                 const data = await response.json();
 
-                if (data.success) {
+                if (response.ok && data.success) {
+                    // Optionally show a success message
                     alert('Settings saved successfully!');
                 } else {
                     throw new Error(data.message || 'Failed to save settings');
@@ -327,7 +293,7 @@
 
             } catch (error) {
                 console.error('Error saving settings:', error);
-                alert(`Error: ${error.message}\n\nPlease ensure the backend server is running.`);
+                alert(`Error: ${error.message}`);
             } finally {
                 saveButton.disabled = false;
                 saveButton.textContent = 'Save Changes';
@@ -363,6 +329,7 @@
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
+                // Clear local storage and redirect
                 localStorage.clear();
                 window.location.href = 'login.html';
             }
