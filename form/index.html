@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Church Donation</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <style>
+        /* Loading state styles */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .error-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading State -->
+    <div class="loading-container" id="loadingContainer">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading church details...</div>
+    </div>
+    
+    <!-- Error State -->
+    <div class="error-container hidden" id="errorContainer">
+        <div class="error-icon">⚠️</div>
+        <div class="error-title">Church Not Found</div>
+        <div class="error-message" id="errorMessage">
+            The church you're looking for could not be found. Please check the URL and try again.
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container hidden" id="mainContainer">
+        <!-- First Form -->
+        <div class="form-container form-page" id="form1">
+            <div class="logo">
+                <img id="churchLogo" src="assets/adventist-en-centered--forest.svg" alt="Church Logo">
+                <div class="subtitle" id="churchSubtitle" style="color: #000;">Church WhatsApp Envelope</div>
+            </div>
+            
+            <form class="form" id="contributionForm">
+                <div class="input-group">
+                    <input type="text" class="input-field" id="tithe" placeholder="Tithe" inputmode="numeric">
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="input-field" id="offering" placeholder="Offering" inputmode="numeric">
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="input-field" id="localBudget" placeholder="Local church budget" inputmode="numeric">
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="input-field" id="churchDevelopment" placeholder="Church development" inputmode="numeric">
+                </div>
+                
+                <div class="input-group static-field">
+                    <input type="text" class="input-field" id="evangelism" placeholder="Evangelism" inputmode="numeric">
+                </div>
+                
+                <div class="input-group" id="added_field">
+                    <!-- Dynamic category fields will be added here -->
+                </div>
+
+                <div class="input-group">
+                    <select class="select-field" id="category">
+                        <option value="">Choose category Options</option>
+                        <option id="Children" value="Children">Children</option>
+                        <option id="Youth" value="Youth">Youth</option>
+                        <option id="AEMR" value="AEMR">AEMR/LCB</option>
+                        <option id="Welfare" value="Welfare">Welfare</option>
+                        <option id="campoffering" value="Camp Offering">Camp meeting -offering</option>
+                        <option id="campexpenses" value="Camp Expenses">Camp meeting -expenses</option>
+                        <option id="youthkitty" value="Youth Kitty">Youth Kitty</option>
+                        <option id="choirkitty" value="Choir Kitty">Choir Kitty</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="next-btn">
+                    Next
+                </button>
+            </form>
+        </div>
+        
+        <!-- Second Form -->
+        <div class="form-container form-page hidden" id="form2">
+            <div class="logo">
+                <img id="churchLogo2" src="assets/adventist-en-centered--forest.svg" alt="Church Logo">
+                <div class="subtitle" id="churchSubtitle2" style="color: #000;">Church WhatsApp Envelope</div>
+            </div>
+            
+            <div class="receipt-section">
+                <div class="receipt-title">Receipt Summary</div>
+                <table class="receipt-table" id="receiptTable">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="amount">Amount (Ksh)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receiptBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <form class="form" id="paymentForm">
+                <div class="input-group">
+                    <input type="text" class="input-field" id="giverName" placeholder="Name" required>
+                </div>
+                
+                <div class="input-group">
+                    <select class="select-field" id="memberStatus" required>
+                        <option value="member">Church Member</option>
+                        <option value="visitor">Visitor</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="tel" class="input-field" id="mpesaNumber" placeholder="M-Pesa number" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+                </div>
+                
+                <button type="submit" class="give-btn" id="giveBtn">
+                    Give
+                </button>
+                
+                <div id="messageContainer"></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Church data will be stored here -->
+    <script>
+        // Store church data globally
+        window.churchData = null;
+    </script>
+    
+    <script src="../scripts/script.js"></script>
+</body>
+</html>
