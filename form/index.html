@@ -456,7 +456,7 @@
         </div>
     </div>
     
-    <script>
+    <!-- <script>
         // Configuration
         const API_BASE_URL = 'https://603da5a97371.ngrok-free.app/api/v1';
         
@@ -838,6 +838,411 @@
         }
 
         init();
-    </script>
+    </script> -->
+    <script>
+    // Configuration
+    const API_BASE_URL = 'https://603da5a97371.ngrok-free.app/api/v1';
+    
+    let currentChurch = null;
+    let contributionData = {
+        tithe: 0,
+        offering: 0,
+        localBudget: 0,
+        churchDevelopment: 0,
+        evangelism: 0,
+        dynamicCategories: {},
+        total: 0
+    };
+    let categoryCounter = 0;
+
+    // Extract church code from URL
+    function getChurchCode() {
+        const path = window.location.pathname;
+        const parts = path.split('/form/');
+        return parts[1] ? parts[1].replace('/', '') : null;
+    }
+
+    // Fetch church by code
+    async function fetchChurch(churchCode) {
+        const response = await fetch(`${API_BASE_URL}/churches/code/${churchCode}`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Church not found' }));
+            throw new Error(errorData.error || 'Church not found');
+        }
+        
+        const data = await response.json();
+        return data.church;
+    }
+
+    // Render church details
+    function renderChurch(church) {
+        currentChurch = church;
+        
+        // Set logo and name on both forms
+        const logo1 = document.getElementById('churchLogo');
+        const logo2 = document.getElementById('churchLogo2');
+        if (church.logo_url) {
+            logo1.src = church.logo_url;
+            logo2.src = church.logo_url;
+            logo1.style.display = 'block';
+            logo2.style.display = 'block';
+        } else {
+            logo1.style.display = 'none';
+            logo2.style.display = 'none';
+        }
+        
+        document.getElementById('churchName').textContent = church.name;
+        document.getElementById('churchName2').textContent = church.name;
+        
+        const subtitle = `${church.name} WhatsApp Envelope`;
+        document.getElementById('churchSubtitle').textContent = subtitle;
+        document.getElementById('churchSubtitle2').textContent = subtitle;
+        
+        // Apply primary color to buttons
+        if (church.primary_color) {
+            document.getElementById('nextBtn').style.background = 
+                `linear-gradient(135deg, ${church.primary_color} 0%, ${adjustColor(church.primary_color, 20)} 100%)`;
+            document.getElementById('giveBtn').style.background = 
+                `linear-gradient(135deg, ${church.primary_color} 0%, ${adjustColor(church.primary_color, 20)} 100%)`;
+        }
+        
+        document.title = `${church.name} - Donation`;
+        
+        // Show main container
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'block';
+    }
+
+    // Adjust color brightness
+    function adjustColor(color, percent) {
+        const num = parseInt(color.replace("#",""), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+            (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+            .toString(16).slice(1);
+    }
+
+    // Show error
+    function showError(message) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('errorScreen').style.display = 'flex';
+        document.getElementById('errorMessage').textContent = message;
+    }
+
+    // Dynamic category management
+    document.getElementById('category').addEventListener('change', function() {
+        const category = this.value;
+        if (category) {
+            createCategoryInput(category);
+            this.value = ''; // Reset dropdown
+        }
+    });
+
+    function createCategoryInput(categoryName) {
+        categoryCounter++;
+        const uniqueId = `${categoryName}_${categoryCounter}`;
+        const addedFieldContainer = document.getElementById('added_field');
+        
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
+        inputGroup.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="text" class="input-field" id="${uniqueId}" 
+                       placeholder="${categoryName}" inputmode="numeric" 
+                       data-category="${categoryName}">
+                <button type="button" class="remove-btn" onclick="removeCategoryField('${uniqueId}')">×</button>
+            </div>
+        `;
+        
+        addedFieldContainer.appendChild(inputGroup);
+        
+        const newInput = document.getElementById(uniqueId);
+        newInput.addEventListener('input', function() {
+            const value = parseFloat(this.value) || 0;
+            contributionData.dynamicCategories[uniqueId] = {
+                name: this.dataset.category,
+                amount: value
+            };
+            formatNumberInput(this);
+        });
+    }
+
+    window.removeCategoryField = function(fieldId) {
+        delete contributionData.dynamicCategories[fieldId];
+        const field = document.getElementById(fieldId);
+        if (field) field.closest('.input-group').remove();
+    };
+
+    // Format number inputs
+    function formatNumberInput(input) {
+        let value = input.value.replace(/[^\d.]/g, '');
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        input.value = value;
+    }
+
+    ['tithe', 'offering', 'localBudget', 'churchDevelopment', 'evangelism'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+    });
+
+    // Form 1 submission
+    document.getElementById('contributionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        contributionData.tithe = parseFloat(document.getElementById('tithe').value) || 0;
+        contributionData.offering = parseFloat(document.getElementById('offering').value) || 0;
+        contributionData.localBudget = parseFloat(document.getElementById('localBudget').value) || 0;
+        contributionData.churchDevelopment = parseFloat(document.getElementById('churchDevelopment').value) || 0;
+        contributionData.evangelism = parseFloat(document.getElementById('evangelism').value) || 0;
+        
+        let dynamicTotal = 0;
+        Object.values(contributionData.dynamicCategories).forEach(category => {
+            dynamicTotal += category.amount;
+        });
+        
+        contributionData.total = contributionData.tithe + contributionData.offering + 
+            contributionData.localBudget + contributionData.churchDevelopment + 
+            contributionData.evangelism + dynamicTotal;
+        
+        if (contributionData.total <= 0) {
+            alert('Please enter at least one contribution amount');
+            return;
+        }
+        
+        updateReceiptTable();
+        document.getElementById('form1').classList.add('hidden');
+        document.getElementById('form2').classList.remove('hidden');
+        history.pushState({page: 'form2'}, "Form 2", "#form2");
+    });
+
+    // Update receipt table
+    function updateReceiptTable() {
+        const receiptBody = document.getElementById('receiptBody');
+        const staticContributions = [
+            { name: 'Tithe', amount: contributionData.tithe },
+            { name: 'Offering', amount: contributionData.offering },
+            { name: 'Local Church Budget', amount: contributionData.localBudget },
+            { name: 'Church Development', amount: contributionData.churchDevelopment },
+            { name: 'Evangelism', amount: contributionData.evangelism }
+        ];
+        
+        let tableHTML = '';
+        staticContributions.forEach(contribution => {
+            if (contribution.amount > 0) {
+                tableHTML += `
+                    <tr>
+                        <td>${contribution.name}</td>
+                        <td class="amount">${contribution.amount.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+        });
+        
+        Object.values(contributionData.dynamicCategories).forEach(category => {
+            if (category.amount > 0) {
+                tableHTML += `
+                    <tr>
+                        <td>${category.name}</td>
+                        <td class="amount">${category.amount.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+        });
+        
+        tableHTML += `
+            <tr class="receipt-total">
+                <td><strong>Total</strong></td>
+                <td class="amount"><strong>${contributionData.total.toFixed(2)}</strong></td>
+            </tr>
+        `;
+        receiptBody.innerHTML = tableHTML;
+    }
+
+    // Autofill from localStorage
+    document.getElementById('giverName').value = localStorage.getItem('nameStored') || "";
+    document.getElementById('mpesaNumber').value = localStorage.getItem('mpesaNumberStored') || "";
+
+    // Form 2 submission
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('giverName').value;
+        const memberStatus = document.getElementById('memberStatus').value;
+        const mpesaNumber = document.getElementById('mpesaNumber').value;
+        
+        localStorage.setItem('mpesaNumberStored', mpesaNumber);
+        localStorage.setItem('nameStored', name);
+        
+        if (!/^254[0-9]{9}$/.test(mpesaNumber)) {
+            showMessage('Please enter a valid phone number starting with 254', 'error');
+            return;
+        }
+        
+        const giveBtn = document.getElementById('giveBtn');
+        giveBtn.classList.add('loading');
+        giveBtn.disabled = true;
+        giveBtn.innerHTML = 'Processing...';
+        
+        initiateSTKPush(mpesaNumber, contributionData.total, name, memberStatus);
+    });
+
+    // STK Push
+    async function initiateSTKPush(phoneNumber, amount, name, memberStatus) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/mpesa/stkpush`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify({
+                    phoneNumber: phoneNumber,
+                    amount: amount,
+                    name: name,
+                    memberStatus: memberStatus,
+                    churchId: currentChurch.id,
+                    contributionData: contributionData
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                showMessage(`STK push sent to ${phoneNumber}. Please check your phone and enter your M-Pesa PIN to complete the payment of Ksh ${amount.toFixed(2)}`, 'success');
+                checkPaymentStatus(data.checkoutRequestId, name, amount);
+            } else {
+                showMessage(`Payment initiation failed: ${data.message}`, 'error');
+                resetGiveButton();
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            showMessage('Payment initiation failed. Please check your connection.', 'error');
+            resetGiveButton();
+        }
+    }
+
+    // Check payment status
+    async function checkPaymentStatus(checkoutRequestId, name, amount) {
+        const maxAttempts = 24;
+        let attempts = 0;
+
+        const checkStatus = async () => {
+            try {
+                attempts++;
+                const response = await fetch(`${API_BASE_URL}/mpesa/payment-status/${checkoutRequestId}`, {
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data) {
+                    const paymentData = data.data;
+                    
+                    if (paymentData.status === 'completed') {
+                        clearInterval(statusCheckInterval);
+                        const receiptInfo = paymentData.mpesaReceiptNumber ? 
+                            `Receipt: ${paymentData.mpesaReceiptNumber}` : 
+                            'Receipt number will be available shortly';
+                        showMessage(`✅ Payment of Ksh ${amount.toFixed(2)} received successfully! Thank you ${name}. ${receiptInfo}`, 'success');
+                        resetGiveButton();
+                        return;
+                    } else if (paymentData.status === 'failed') {
+                        clearInterval(statusCheckInterval);
+                        showMessage(`❌ Payment failed: ${paymentData.resultDesc || 'Transaction was cancelled'}`, 'error');
+                        resetGiveButton();
+                        return;
+                    }
+                }
+
+                if (attempts >= maxAttempts) {
+                    clearInterval(statusCheckInterval);
+                    showMessage('Payment status check timeout. Please contact support if payment was deducted.', 'error');
+                    resetGiveButton();
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+                if (attempts >= maxAttempts) {
+                    clearInterval(statusCheckInterval);
+                    showMessage('Unable to verify payment status. Please contact support.', 'error');
+                    resetGiveButton();
+                }
+            }
+        };
+
+        setTimeout(() => {
+            checkStatus();
+            statusCheckInterval = setInterval(checkStatus, 5000);
+        }, 3000);
+    }
+
+    let statusCheckInterval;
+
+    function resetGiveButton() {
+        const giveBtn = document.getElementById('giveBtn');
+        giveBtn.classList.remove('loading');
+        giveBtn.disabled = false;
+        giveBtn.innerHTML = 'Give';
+    }
+
+    function showMessage(message, type) {
+        const messageContainer = document.getElementById('messageContainer');
+        const messageClass = type === 'success' ? 'success-message' : 'error-message';
+        messageContainer.innerHTML = `<div class="${messageClass}">${message}</div>`;
+        
+        if (type === 'error') {
+            setTimeout(() => {
+                if (messageContainer.innerHTML.includes(message)) {
+                    messageContainer.innerHTML = '';
+                }
+            }, 10000);
+        }
+    }
+
+    // Handle browser back button
+    window.addEventListener("popstate", function(event) {
+        if (event.state && event.state.page === "form2") {
+            document.getElementById('form1').classList.add("hidden");
+            document.getElementById('form2').classList.remove("hidden");
+        } else {
+            document.getElementById('form2').classList.add("hidden");
+            document.getElementById('form1').classList.remove("hidden");
+        }
+    });
+
+    // Initialize
+    async function init() {
+        const churchCode = getChurchCode();
+        
+        if (!churchCode) {
+            showError('No church code provided in URL');
+            return;
+        }
+        
+        try {
+            const church = await fetchChurch(churchCode);
+            renderChurch(church);
+        } catch (error) {
+            console.error('Error fetching church:', error);
+            showError(`Church not found with code: ${churchCode}`);
+        }
+    }
+
+    init();
+</script>
 </body>
 </html>
