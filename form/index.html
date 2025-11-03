@@ -3,194 +3,446 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Church Donation</title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <style>
-        /* Loading state styles */
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            color: white;
-            margin-top: 20px;
-            font-size: 18px;
-        }
-        
-        .error-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .error-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-        
-        .error-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .error-message {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    <title>Church Donation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="min-h-screen bg-gray-50">
     <!-- Loading State -->
-    <div class="loading-container" id="loadingContainer">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Loading church details...</div>
-    </div>
-    
-    <!-- Error State -->
-    <div class="error-container hidden" id="errorContainer">
-        <div class="error-icon">⚠️</div>
-        <div class="error-title">Church Not Found</div>
-        <div class="error-message" id="errorMessage">
-            The church you're looking for could not be found. Please check the URL and try again.
+    <div id="loading" class="flex items-center justify-center min-h-screen">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+            <p class="mt-4 text-gray-600 font-medium">Loading church details...</p>
         </div>
     </div>
-    
-    <!-- Main Content -->
-    <div class="container hidden" id="mainContainer">
-        <!-- First Form -->
-        <div class="form-container form-page" id="form1">
-            <div class="logo">
-                <img id="churchLogo" src="../assets/adventist-en-centered--forest.svg" alt="Church Logo">
-                <div class="subtitle" id="churchSubtitle" style="color: #000;">Church WhatsApp Envelope</div>
-            </div>
-            
-            <form class="form" id="contributionForm">
-                <div class="input-group">
-                    <input type="text" class="input-field" id="tithe" placeholder="Tithe" inputmode="numeric">
-                </div>
-                
-                <div class="input-group">
-                    <input type="text" class="input-field" id="offering" placeholder="Offering" inputmode="numeric">
-                </div>
-                
-                <div class="input-group">
-                    <input type="text" class="input-field" id="localBudget" placeholder="Local church budget" inputmode="numeric">
-                </div>
-                
-                <div class="input-group">
-                    <input type="text" class="input-field" id="churchDevelopment" placeholder="Church development" inputmode="numeric">
-                </div>
-                
-                <div class="input-group static-field">
-                    <input type="text" class="input-field" id="evangelism" placeholder="Evangelism" inputmode="numeric">
-                </div>
-                
-                <div class="input-group" id="added_field">
-                    <!-- Dynamic category fields will be added here -->
-                </div>
 
-                <div class="input-group">
-                    <select class="select-field" id="category">
-                        <option value="">Choose category Options</option>
-                        <option id="Children" value="Children">Children</option>
-                        <option id="Youth" value="Youth">Youth</option>
-                        <option id="AEMR" value="AEMR">AEMR/LCB</option>
-                        <option id="Welfare" value="Welfare">Welfare</option>
-                        <option id="campoffering" value="Camp Offering">Camp meeting -offering</option>
-                        <option id="campexpenses" value="Camp Expenses">Camp meeting -expenses</option>
-                        <option id="youthkitty" value="Youth Kitty">Youth Kitty</option>
-                        <option id="choirkitty" value="Choir Kitty">Choir Kitty</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="next-btn">
-                    Next
-                </button>
-            </form>
-        </div>
-        
-        <!-- Second Form -->
-        <div class="form-container form-page hidden" id="form2">
-            <div class="logo">
-                <img id="churchLogo2" src="../assets/adventist-en-centered--forest.svg" alt="Church Logo">
-                <div class="subtitle" id="churchSubtitle2" style="color: #000;">Church WhatsApp Envelope</div>
-            </div>
-            
-            <div class="receipt-section">
-                <div class="receipt-title">Receipt Summary</div>
-                <table class="receipt-table" id="receiptTable">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th class="amount">Amount (Ksh)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="receiptBody">
-                        <!-- Table rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <form class="form" id="paymentForm">
-                <div class="input-group">
-                    <input type="text" class="input-field" id="giverName" placeholder="Name" required>
-                </div>
-                
-                <div class="input-group">
-                    <select class="select-field" id="memberStatus" required>
-                        <option value="member">Church Member</option>
-                        <option value="visitor">Visitor</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <input type="tel" class="input-field" id="mpesaNumber" placeholder="M-Pesa number" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
-                </div>
-                
-                <button type="submit" class="give-btn" id="giveBtn">
-                    Give
-                </button>
-                
-                <div id="messageContainer"></div>
-            </form>
+    <!-- Error State -->
+    <div id="error" class="hidden flex items-center justify-center min-h-screen p-4">
+        <div class="bg-red-50 border border-red-200 rounded-lg p-8 max-w-md w-full text-center">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h2 class="text-red-800 text-2xl font-bold mb-3">Church Not Found</h2>
+            <p id="error-message" class="text-red-600 mb-6"></p>
+            <a href="/" class="inline-block bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                Go to Homepage
+            </a>
         </div>
     </div>
-    
-    <!-- Church data will be stored here -->
+
+    <!-- Form Container -->
+    <div id="form-container" class="hidden min-h-screen">
+        <!-- Church Header with Banner -->
+        <div id="church-header" class="relative">
+            <!-- Banner Image -->
+            <div id="banner-container" class="hidden">
+                <img id="banner-img" src="" alt="Church Banner" class="w-full h-64 object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
+            </div>
+            
+            <!-- Church Info Overlay -->
+            <div class="relative bg-white shadow-md">
+                <div class="max-w-4xl mx-auto px-6 py-8">
+                    <div class="flex items-center gap-6">
+                        <!-- Church Logo -->
+                        <div id="logo-container" class="hidden">
+                            <img id="church-logo" src="" alt="Church Logo" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg">
+                        </div>
+                        
+                        <!-- Church Details -->
+                        <div class="flex-1">
+                            <h1 id="church-name" class="text-3xl font-bold text-gray-900 mb-2"></h1>
+                            <p id="church-description" class="text-gray-600 mb-2"></p>
+                            <div id="church-location" class="hidden text-sm text-gray-500">
+                                <span class="inline-flex items-center gap-1">
+                                    📍 <span id="church-city"></span>, <span id="church-country"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donation Form -->
+        <div class="max-w-4xl mx-auto px-6 py-12">
+            <div id="form-content" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Make Your Donation</h2>
+                    
+                    <form id="donation-form" class="space-y-6">
+                        <!-- Personal Information -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
+                            
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Full Name <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name"
+                                    required
+                                    placeholder="Enter your full name"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Phone Number <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    id="phoneNumber" 
+                                    name="phoneNumber"
+                                    required
+                                    placeholder="254712345678"
+                                    pattern="254[0-9]{9}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                >
+                                <p class="mt-1 text-xs text-gray-500">Format: 254712345678 (no spaces or +)</p>
+                            </div>
+
+                            <div>
+                                <label for="memberStatus" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Member Status <span class="text-red-500">*</span>
+                                </label>
+                                <select 
+                                    id="memberStatus" 
+                                    name="memberStatus"
+                                    required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                >
+                                    <option value="">Select your status</option>
+                                    <option value="member">Church Member</option>
+                                    <option value="visitor">Visitor</option>
+                                    <option value="online">Online Supporter</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Contribution Amounts -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Contribution Details</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="tithe" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Tithe (KES)
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        id="tithe" 
+                                        name="tithe"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        class="contribution-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="offering" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Offering (KES)
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        id="offering" 
+                                        name="offering"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        class="contribution-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="localBudget" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Local Budget (KES)
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        id="localBudget" 
+                                        name="localBudget"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        class="contribution-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="churchDevelopment" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Church Development (KES)
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        id="churchDevelopment" 
+                                        name="churchDevelopment"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        class="contribution-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="evangelism" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Evangelism (KES)
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        id="evangelism" 
+                                        name="evangelism"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        class="contribution-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Amount Display -->
+                        <div class="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-semibold text-gray-800">Total Amount:</span>
+                                <span id="total-amount" class="text-3xl font-bold text-blue-600">KES 0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button 
+                            type="submit" 
+                            id="submit-btn"
+                            class="w-full py-4 px-6 rounded-lg font-bold text-lg text-white transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                            Proceed to Payment
+                        </button>
+                    </form>
+
+                    <!-- Success Message -->
+                    <div id="success-message" class="hidden mt-8 bg-green-50 border-2 border-green-200 rounded-lg p-6 text-center">
+                        <div class="text-green-500 text-5xl mb-3">✓</div>
+                        <h3 class="text-green-800 font-bold text-xl mb-2">Payment Initiated!</h3>
+                        <p class="text-green-700 mb-4">Please check your phone for the M-Pesa prompt</p>
+                        <button 
+                            onclick="resetForm()" 
+                            class="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                        >
+                            Make Another Donation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Store church data globally
-        window.churchData = null;
+        // Configuration - Update with your backend URL
+        const BACKEND_URL = 'https://your-backend-url.com/api/v1'; // UPDATE THIS!
+
+        let currentChurch = null;
+
+        // Extract church code (slug) from URL
+        function getChurchCode() {
+            const path = window.location.pathname;
+            const parts = path.split('/form/');
+            return parts[1] ? parts[1].replace('/', '') : null;
+        }
+
+        // Fetch church details by code
+        async function fetchChurchByCode(churchCode) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/churches/code/${churchCode}`);
+                
+                if (!response.ok) {
+                    throw new Error('Church not found');
+                }
+                
+                const data = await response.json();
+                return data.church;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // Render church details
+        function renderChurch(church) {
+            currentChurch = church;
+
+            // Set church name and description
+            document.getElementById('church-name').textContent = church.name;
+            
+            if (church.description) {
+                document.getElementById('church-description').textContent = church.description;
+            } else {
+                document.getElementById('church-description').classList.add('hidden');
+            }
+
+            // Set location
+            if (church.city && church.country) {
+                document.getElementById('church-city').textContent = church.city;
+                document.getElementById('church-country').textContent = church.country;
+                document.getElementById('church-location').classList.remove('hidden');
+            }
+
+            // Set banner image
+            if (church.template_header_image) {
+                document.getElementById('banner-img').src = church.template_header_image;
+                document.getElementById('banner-container').classList.remove('hidden');
+            }
+
+            // Set logo
+            if (church.logo_url) {
+                document.getElementById('church-logo').src = church.logo_url;
+                document.getElementById('logo-container').classList.remove('hidden');
+            }
+
+            // Apply primary color to button
+            const submitBtn = document.getElementById('submit-btn');
+            if (church.primary_color) {
+                submitBtn.style.backgroundColor = church.primary_color;
+            } else {
+                submitBtn.style.backgroundColor = '#3b82f6'; // Default blue
+            }
+
+            // Update page title
+            document.title = `Donate to ${church.name}`;
+
+            // Show form
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('form-container').classList.remove('hidden');
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // Calculate total amount
+        function calculateTotal() {
+            const inputs = document.querySelectorAll('.contribution-input');
+            let total = 0;
+
+            inputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                total += value;
+            });
+
+            document.getElementById('total-amount').textContent = `KES ${total.toFixed(2)}`;
+            return total;
+        }
+
+        // Add event listeners to all contribution inputs
+        function setupContributionListeners() {
+            const inputs = document.querySelectorAll('.contribution-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateTotal);
+            });
+        }
+
+        // Handle form submission
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            const formData = new FormData(e.target);
+            
+            // Get all contribution amounts
+            const contributionData = {
+                tithe: parseFloat(formData.get('tithe')) || 0,
+                offering: parseFloat(formData.get('offering')) || 0,
+                localBudget: parseFloat(formData.get('localBudget')) || 0,
+                churchDevelopment: parseFloat(formData.get('churchDevelopment')) || 0,
+                evangelism: parseFloat(formData.get('evangelism')) || 0,
+            };
+
+            const totalAmount = calculateTotal();
+
+            if (totalAmount <= 0) {
+                alert('Please enter at least one contribution amount');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
+            }
+
+            // Prepare payload for backend
+            const payload = {
+                phoneNumber: formData.get('phoneNumber'),
+                amount: totalAmount,
+                name: formData.get('name'),
+                memberStatus: formData.get('memberStatus'),
+                churchId: currentChurch.id,
+                contributionData: contributionData
+            };
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/mpesa/stkpush`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Show success message
+                    document.getElementById('success-message').classList.remove('hidden');
+                    document.getElementById('donation-form').classList.add('hidden');
+                    
+                    // Scroll to success message
+                    document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert(result.message || 'Payment initiation failed. Please try again.');
+                }
+
+            } catch (error) {
+                alert('Error initiating payment: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+
+        // Reset form for another donation
+        function resetForm() {
+            document.getElementById('donation-form').reset();
+            document.getElementById('donation-form').classList.remove('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+            calculateTotal();
+        }
+
+        // Initialize
+        async function init() {
+            const churchCode = getChurchCode();
+
+            if (!churchCode) {
+                showError('No church code provided in URL');
+                return;
+            }
+
+            try {
+                const church = await fetchChurchByCode(churchCode);
+                renderChurch(church);
+
+                // Setup event listeners
+                setupContributionListeners();
+                document.getElementById('donation-form').addEventListener('submit', handleSubmit);
+            } catch (error) {
+                showError(`Church not found with code: ${churchCode}`);
+            }
+        }
+
+        // Run on page load
+        init();
     </script>
-    
-    <script src="../scripts/script.js"></script>
 </body>
 </html>
