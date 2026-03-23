@@ -2,3 +2,18 @@
     base = "frontend"
     command = "npm run build"
     publish = "dist"
+
+[build.environment]
+    VITE_BACKEND_URL = "https://api.samsonthomas.app"
+    VITE_CENTRIFUGO_URL = "wss://api.samsonthomas.app/connection/websocket"
+
+[[redirects]]
+    from = "/api/*"
+    to = "https://api.samsonthomas.app/api/:splat"
+    status = 200
+    force = true
+
+[[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200
