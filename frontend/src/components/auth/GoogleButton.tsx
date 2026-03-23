@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 
 // Must go directly to the backend (not through Vite proxy) so the session cookie
 // is bound to the same domain that receives Google's callback.
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'https://api.samsonthomas.app'
 const CALLBACK_URL = `${window.location.origin}/auth/google/callback`
 const GOOGLE_AUTH_URL = `${BACKEND_URL}/api/v1/auth/google/login/redirect?callback_url=${encodeURIComponent(CALLBACK_URL)}`
 
