@@ -57,10 +57,13 @@ export const addAdmin = (id: number, email: string) =>
 export const removeAdmin = (id: number, email: string) =>
   apiClient.post<ApiSuccess>(`/churches/${id}/remove-admin`, { email }).then((r) => r.data)
 
-export const getChurchMembers = (id: number) =>
+export const getChurchMembers = (id: number, page = 1, perPage = 50) =>
   apiClient
-    .get<{ members: ChurchMember[] }>(`/churches/${id}/members`)
-    .then((r) => r.data.members)
+    .get<{ members: ChurchMember[]; total: number; page: number; per_page: number; pages: number }>(
+      `/churches/${id}/members`,
+      { params: { page, per_page: perPage } },
+    )
+    .then((r) => r.data)
 
 export const addChurchMember = (id: number, phone_number: string, name?: string) =>
   apiClient.post<ApiSuccess>(`/churches/${id}/members`, { phone_number, name }).then((r) => r.data)
