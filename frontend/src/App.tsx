@@ -23,6 +23,7 @@ const DonationsPage = lazy(() => import('@/pages/DonationsPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const TemplatesPage = lazy(() => import('@/pages/TemplatesPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+const DonationFormPage = lazy(() => import('@/pages/DonationFormPage'))
 
 function PageFallback() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+          <Route path="/form/:churchCode" element={<DonationFormPage />} />
 
           {/* All authenticated users — AppShell wraps everything */}
           <Route element={<ProtectedRoute />}>
