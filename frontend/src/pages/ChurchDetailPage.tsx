@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { useChurchStore } from '@/stores/churchStore'
-import type { Church } from '@/types/church'
+import type { Church, ChurchMember } from '@/types/church'
 
 export default function ChurchDetailPage() {
   const { churchId } = useParams<{ churchId: string }>()
@@ -42,8 +42,8 @@ export default function ChurchDetailPage() {
     enabled: !!id,
   })
   const membersQuery = useQuery({
-    queryKey: ['churches', id, 'members'],
-    queryFn: () => getChurchMembers(id!),
+    queryKey: ['churches', id, 'members', 1, 50],
+    queryFn: () => getChurchMembers(id!, 1, 50),
     enabled: !!id,
   })
   const sheetsQuery = useQuery({
@@ -161,7 +161,7 @@ export default function ChurchDetailPage() {
         </TabsContent>
 
         <TabsContent value="members" className="mt-4">
-          <MemberTable churchId={church.id} members={membersQuery.data ?? []} />
+          <MemberTable churchId={church.id} members={membersQuery.data?.members ?? ([] as ChurchMember[])} />
         </TabsContent>
 
         <TabsContent value="sheets" className="mt-4 space-y-4">
