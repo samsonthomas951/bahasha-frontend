@@ -11,6 +11,7 @@ import {
   getSheetsStatus,
 } from '@/api/churches'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { AdminMembersPanel } from '@/components/churches/AdminMembersPanel'
 import { ChurchForm } from '@/components/churches/ChurchForm'
 import { MemberTable } from '@/components/churches/MemberTable'
 import { SheetsStatusBadge } from '@/components/churches/SheetsStatusBadge'
@@ -128,6 +129,7 @@ export default function ChurchDetailPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="edit">Edit</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
+          <TabsTrigger value="accounts">Accounts</TabsTrigger>
           <TabsTrigger value="sheets">Sheets</TabsTrigger>
         </TabsList>
 
@@ -162,6 +164,16 @@ export default function ChurchDetailPage() {
 
         <TabsContent value="members" className="mt-4">
           <MemberTable churchId={church.id} members={membersQuery.data?.members ?? ([] as ChurchMember[])} />
+        </TabsContent>
+
+        <TabsContent value="accounts" className="mt-4 space-y-3">
+          <div>
+            <h3 className="text-base font-semibold">Admin Members</h3>
+            <p className="text-sm text-muted-foreground">
+              Manage who can administer this church (up to 4 admins total). Admins can optionally be notified by email when added.
+            </p>
+          </div>
+          <AdminMembersPanel churchId={church.id} />
         </TabsContent>
 
         <TabsContent value="sheets" className="mt-4 space-y-4">

@@ -90,3 +90,39 @@ export interface CreateChurchPayload {
 }
 
 export interface UpdateChurchPayload extends Partial<CreateChurchPayload> {}
+
+export interface ChurchAdminPermissions {
+  can_manage_members: boolean
+  can_edit_church: boolean
+  can_send_campaigns: boolean
+  can_view_analytics: boolean
+  can_manage_admins: boolean
+}
+
+export interface ChurchAdminMember extends ChurchAdminPermissions {
+  id: number | null
+  church_id: number
+  user_id: number
+  user: { id: number; email: string; username: string } | null
+  invited_by_user_id: number | null
+  is_owner: boolean
+  joined_at: string | null
+  created_at?: string | null
+}
+
+export interface MemberInvite {
+  id: number
+  church_id: number
+  phone_number: string
+  name: string | null
+  email: string
+  status: 'pending' | 'accepted' | 'expired'
+  invited_by_user_id: number
+  expires_at: string
+  created_at: string
+}
+
+export interface AdminSlots {
+  total: number
+  used: number
+}

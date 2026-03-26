@@ -1,12 +1,16 @@
 import { apiClient } from '@/lib/axios'
 import type {
   Church,
+  ChurchAdminMember,
+  ChurchAdminPermissions,
   ChurchMember,
   ChurchSheet,
   ChurchStats,
   CreateChurchPayload,
+  MemberInvite,
   SheetsStatus,
   UpdateChurchPayload,
+  AdminSlots,
 } from '@/types/church'
 import type { ApiSuccess } from '@/types/api'
 
@@ -75,3 +79,42 @@ export const searchChurches = (q: string) =>
   apiClient
     .get<{ churches: Church[] }>('/churches/search', { params: { q } })
     .then((r) => r.data.churches)
+
+export const getChurchAdmins = (id: number) =>
+  apiClient
+    .get<{ church_id: number; admins: ChurchAdminMember[]; slots: AdminSlots }>(`/churches/${id}/admins`)
+    .then((r) => r.data)
+
+export const addChurchAdmin = (
+  id: number,
+  email: string,
+  permissions: Partial<ChurchAdminPermissions>,
+  notify = false,
+) =>
+  apiClient
+    .post<{ message: string; admin: ChurchAdminMember }>(`/churches/${id}/admins`, { email, permissions, notify })
+    .then((r) => r.data)
+
+export const updateChurchAdmin = (id: number, userId: number, permissions: Partial<ChurchAdminPermissions>) =>
+  apiClient
+    .put<{ message: string; admin: ChurchAdminMember }>(`/churches/${id}/admins/${userId}`, { permissions })
+    .then((r) => r.data)
+
+export const removeChurchAdmin = (id: number, userId: number) =>
+  apiClient.delete<ApiSuccess>(`/churches/${id}/admins/${userId}`).then((r) => r.data)
+
+export const getChurchInvites = (id: number) =>
+  apiClient
+    .get<{ church_id: number; invites: MemberInvite[] }>(`/churches/${id}/invites`)
+    .then((r) => r.data.invites)
+
+export const createMemberInvite = (
+  id: number,
+  payload: { phone_number: string; name?: string; email: string },
+) =>
+  apiClient
+    .post<{ message: string; invite: MemberInvite }>(`/churches/${id}/members/invite`, payload)
+    .then((r) => r.data)
+
+export const cancelMemberInvite = (id: number, inviteId: number) =>
+  apiClient.delete<ApiSuccess>(`/churches/${id}/invites/${inviteId}`).then((r) => r.data)

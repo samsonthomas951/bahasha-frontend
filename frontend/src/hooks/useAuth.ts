@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { changePassword, getProfile, login, logout, updateProfile } from '@/api/auth'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/authStore'
+import { useChurchStore } from '@/stores/churchStore'
 import type { ChangePasswordPayload, LoginPayload, UpdateProfilePayload } from '@/types/auth'
 
 export function useAuth() {
   const { isAuthenticated, user, clearAuth, setAuth, updateUser } = useAuthStore()
+  const clearActiveChurch = useChurchStore((s) => s.clearActiveChurch)
   const navigate = useNavigate()
 
   const loginMutation = useMutation({
@@ -21,6 +23,7 @@ export function useAuth() {
     mutationFn: logout,
     onSettled: () => {
       clearAuth()
+      clearActiveChurch()
       queryClient.clear()
       navigate('/login')
     },

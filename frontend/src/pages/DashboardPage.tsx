@@ -32,10 +32,14 @@ export default function DashboardPage() {
     enabled: isChurchAdmin(user),
   })
 
-  // Auto-select the first church if none is selected
+  // Auto-select the first church if none is selected, or reset if the stored
+  // church doesn't belong to this user (e.g. stale localStorage from another session)
   useEffect(() => {
-    if (churchesQuery.data && churchesQuery.data.length > 0 && !activeChurchId) {
-      setActiveChurch(churchesQuery.data[0].id)
+    if (churchesQuery.data && churchesQuery.data.length > 0) {
+      const ids = churchesQuery.data.map((c) => c.id)
+      if (!activeChurchId || !ids.includes(activeChurchId)) {
+        setActiveChurch(churchesQuery.data[0].id)
+      }
     }
   }, [churchesQuery.data, activeChurchId, setActiveChurch])
 

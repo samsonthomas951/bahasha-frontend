@@ -52,9 +52,15 @@ export function MemberTable({ churchId, members }: Props) {
           disabled={!phone || addMutation.isPending}
         >
           <Plus className="mr-1 h-4 w-4" />
-          Add
+          {addMutation.isPending ? 'Adding…' : 'Add'}
         </Button>
       </div>
+
+      {addMutation.isError && (
+        <p className="text-sm text-destructive">
+          {(addMutation.error as Error)?.message ?? 'Failed to add member'}
+        </p>
+      )}
 
       <Table>
         <TableHeader>
