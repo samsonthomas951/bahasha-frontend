@@ -28,3 +28,9 @@ export const changePassword = (body: ChangePasswordPayload) =>
 
 export const getCentrifugoToken = () =>
   apiClient.get<{ token: string }>('/centrifugo/token').then((r) => r.data)
+
+export const forgotPassword = (email: string) =>
+  apiClient.post<{ success: boolean; message: string }>('/auth/forgot-password', { email }).then((r) => r.data)
+
+export const resetPassword = (token: string, new_password: string) =>
+  apiClient.post<{ success: boolean; message: string }>('/auth/reset-password', { token, new_password }).then((r) => r.data)

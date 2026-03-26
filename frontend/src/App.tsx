@@ -9,6 +9,8 @@ import { isSuperAdmin } from '@/types/auth'
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const SignupPage = lazy(() => import('@/pages/SignupPage'))
 const GoogleCallbackPage = lazy(() => import('@/pages/GoogleCallbackPage'))
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'))
 const AdminPage = lazy(() => import('@/pages/AdminPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ChurchesPage = lazy(() => import('@/pages/ChurchesPage'))
@@ -50,6 +52,8 @@ export default function App() {
           {/* Public */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
           <Route path="/form/:churchCode" element={<DonationFormPage />} />
 

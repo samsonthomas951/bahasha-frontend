@@ -13,6 +13,7 @@ export function LoginForm() {
   const [password, setPassword] = useState('')
 
   const oauthError = params.get('error')
+  const resetSuccess = params.get('reset') === '1'
 
   const handleSubmit = (e: { preventDefault(): void }) => {
     e.preventDefault()
@@ -50,7 +51,15 @@ export function LoginForm() {
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="password">Password</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link
+              to="/forgot-password"
+              className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <Input
             id="password"
             type="password"
@@ -61,6 +70,11 @@ export function LoginForm() {
             disabled={loginMutation.isPending}
           />
         </div>
+        {resetSuccess && (
+          <p className="text-sm text-green-600">
+            Password reset successfully. You can now sign in.
+          </p>
+        )}
         {(errorMsg || oauthError) && (
           <p className="text-sm text-destructive">
             {errorMsg ?? decodeURIComponent(oauthError!)}
