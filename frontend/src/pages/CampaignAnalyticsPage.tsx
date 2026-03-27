@@ -102,8 +102,8 @@ export default function CampaignAnalyticsPage() {
                 <YAxis yAxisId="left" tick={{ fontSize: 11 }} />
                 <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
-                  formatter={(v: number, name: string) =>
-                    name === 'Revenue' ? formatCurrency(v) : v.toLocaleString()
+                  formatter={(v, name) =>
+                    name === 'Revenue' ? formatCurrency(Number(v)) : Number(v).toLocaleString()
                   }
                 />
                 <Bar yAxisId="left" dataKey="Delivered" fill="#06b6d4" radius={[3, 3, 0, 0]} />
