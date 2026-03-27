@@ -1,5 +1,12 @@
 import { apiClient } from '@/lib/axios'
-import type { Campaign, CampaignRecipient, CampaignReport, CreateCampaignPayload, WhatsAppTemplate } from '@/types/campaign'
+import type {
+  Campaign,
+  CampaignRecipient,
+  CampaignReport,
+  CampaignAnalytics,
+  CreateCampaignPayload,
+  WhatsAppTemplate,
+} from '@/types/campaign'
 import type { PaginatedResponse } from '@/types/api'
 import type { Group } from '@/types/group'
 
@@ -33,7 +40,8 @@ interface ReportApiResponse {
   report: {
     campaign: Campaign
     recipients: CampaignRecipient[]
-    summary: { delivery_rate: number; response_rate: number }
+    summary: CampaignReport['summary']
+    revenue: CampaignReport['revenue']
   }
 }
 
@@ -41,14 +49,22 @@ export const getCampaignReport = (campaignId: number) =>
   apiClient
     .get<ReportApiResponse>(`/campaigns/${campaignId}/report`)
     .then((r) => {
-      const { campaign, recipients, summary } = r.data.report
+      const { campaign, recipients, summary, revenue } = r.data.report
       return {
         campaign,
         recipients,
+        summary,
+        revenue,
+        // convenience aliases
         delivery_rate: summary.delivery_rate,
         response_rate: summary.response_rate,
       } satisfies CampaignReport
     })
+
+export const getCampaignAnalytics = () =>
+  apiClient
+    .get<{ success: boolean } & CampaignAnalytics>('/campaigns/analytics')
+    .then((r) => ({ campaigns: r.data.campaigns, summary: r.data.summary }) satisfies CampaignAnalytics)
 
 export const getTemplates = () =>
   apiClient
