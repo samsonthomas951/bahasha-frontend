@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface ChurchPublic {
   id: number
   name: string
@@ -24,6 +26,7 @@ interface ContributionData {
   total: number
 }
 
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATIC_FIELDS = [
   { id: 'tithe', label: 'Tithe' },
@@ -43,6 +46,8 @@ const EXTRA_OPTIONS = [
   'Youth Kitty',
   'Choir Kitty',
 ]
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function adjustColor(hex: string, percent: number): string {
   const num = parseInt(hex.replace('#', ''), 16)
@@ -66,6 +71,8 @@ function numericOnly(value: string): string {
   return parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : clean
 }
 
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
 function ChurchHeader({ church }: { church: ChurchPublic }) {
   return (
     <div className="flex flex-col items-center pb-4 pt-6">
@@ -83,6 +90,8 @@ function ChurchHeader({ church }: { church: ChurchPublic }) {
     </div>
   )
 }
+
+// ─── Step 1 – Contributions ───────────────────────────────────────────────────
 
 interface Step1Props {
   church: ChurchPublic
@@ -209,6 +218,7 @@ function Step1({ church, onNext }: Step1Props) {
   )
 }
 
+// ─── Step 2 – Payment ─────────────────────────────────────────────────────────
 
 interface Step2Props {
   church: ChurchPublic
@@ -222,6 +232,7 @@ function Step2({ church, data, onBack }: Step2Props) {
   const [name, setName] = useState(() => localStorage.getItem('nameStored') ?? '')
   const [memberStatus, setMemberStatus] = useState<'member' | 'visitor'>('member')
   const [phone, setPhone] = useState(() => localStorage.getItem('mpesaNumberStored') ?? '')
+  const [isAnonymous, setIsAnonymous] = useState(false)
   const [payStatus, setPayStatus] = useState<PayStatus>('idle')
   const [message, setMessage] = useState('')
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -252,14 +263,14 @@ function Step2({ church, data, onBack }: Step2Props) {
             clearInterval(intervalRef.current!)
             setPayStatus('success')
             setMessage(
-              `✅ Payment of Ksh ${amount.toFixed(2)} received! Thank you ${giverName}. ${mpesaReceiptNumber ? `Receipt: ${mpesaReceiptNumber}` : ''}`,
+              `Payment of Ksh ${amount.toFixed(2)} received! Thank you ${giverName}. ${mpesaReceiptNumber ? `Receipt: ${mpesaReceiptNumber}` : ''}`,
             )
             return
           }
           if (status === 'failed') {
             clearInterval(intervalRef.current!)
             setPayStatus('error')
-            setMessage(`❌ Payment failed: ${resultDesc ?? 'Transaction was cancelled'}`)
+            setMessage(`Payment failed: ${resultDesc ?? 'Transaction was cancelled'}`)
             return
           }
         }
@@ -308,6 +319,7 @@ function Step2({ church, data, onBack }: Step2Props) {
           memberStatus,
           churchId: church.id,
           contributionData: data,
+          isAnonymous,
         }),
       })
       const json = await res.json()
@@ -393,6 +405,19 @@ function Step2({ church, data, onBack }: Step2Props) {
         className={inputCls}
       />
 
+      <label className="flex items-center gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={isAnonymous}
+          onChange={(e) => setIsAnonymous(e.target.checked)}
+          className="h-5 w-5 rounded border-gray-300 accent-green-600"
+        />
+        <span className="text-sm text-gray-600">
+          Make my donation anonymous
+          <span className="ml-1 text-xs text-gray-400">(name &amp; phone hidden in records)</span>
+        </span>
+      </label>
+
       {message && (
         <div
           className={`rounded-lg px-4 py-3 text-sm text-center ${
@@ -431,6 +456,7 @@ function Step2({ church, data, onBack }: Step2Props) {
   )
 }
 
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function DonationFormPage() {
   const { churchCode } = useParams<{ churchCode: string }>()
@@ -476,6 +502,7 @@ export default function DonationFormPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // ── Loading ────────────────────────────────────────────────────────────────
   if (loadState === 'loading') {
     return (
       <div className="flex min-h-svh items-center justify-center bg-gradient-to-br from-green-950 to-green-800">
@@ -490,6 +517,7 @@ export default function DonationFormPage() {
     )
   }
 
+  // ── Error ──────────────────────────────────────────────────────────────────
   if (loadState === 'error' || !church) {
     return (
       <div className="flex min-h-svh items-center justify-center bg-gradient-to-br from-green-950 to-green-800 p-6">
@@ -502,6 +530,7 @@ export default function DonationFormPage() {
     )
   }
 
+  // ── Form ───────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-svh bg-gradient-to-br from-green-950 to-green-800 md:flex md:items-center md:justify-center md:py-10">
       <div className="w-full bg-white md:max-w-md md:rounded-2xl md:shadow-2xl">
