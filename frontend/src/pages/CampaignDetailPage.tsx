@@ -4,7 +4,6 @@ import { Trash2 } from 'lucide-react'
 import {
   getChurch,
   getChurchStats,
-  getChurchMembers,
   deleteChurch,
   initializeSheets,
   getChurchSheets,
@@ -39,11 +38,6 @@ export default function ChurchDetailPage() {
   const statsQuery = useQuery({
     queryKey: ['churches', id, 'stats'],
     queryFn: () => getChurchStats(id!),
-    enabled: !!id,
-  })
-  const membersQuery = useQuery({
-    queryKey: ['churches', id, 'members', 1, 50],
-    queryFn: () => getChurchMembers(id!, 1, 50),
     enabled: !!id,
   })
   const sheetsQuery = useQuery({
