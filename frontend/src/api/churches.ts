@@ -118,3 +118,14 @@ export const createMemberInvite = (
 
 export const cancelMemberInvite = (id: number, inviteId: number) =>
   apiClient.delete<ApiSuccess>(`/churches/${id}/invites/${inviteId}`).then((r) => r.data)
+
+export const bulkAddChurchMembers = (
+  id: number,
+  members: { phone_number: string; name?: string }[],
+) =>
+  apiClient
+    .post<{ message: string; added: number; updated: number; failed: { phone_number: string; error: string }[] }>(
+      `/churches/${id}/members/bulk`,
+      { members },
+    )
+    .then((r) => r.data)
