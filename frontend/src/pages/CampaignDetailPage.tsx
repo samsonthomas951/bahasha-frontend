@@ -12,7 +12,7 @@ import {
 } from '@/api/churches'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChurchForm } from '@/components/churches/ChurchForm'
-import { MemberTable } from '@/components/churches/MemberTable'
+
 import { SheetsStatusBadge } from '@/components/churches/SheetsStatusBadge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -160,9 +160,6 @@ export default function ChurchDetailPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="members" className="mt-4">
-          <MemberTable churchId={church.id} members={membersQuery.data?.members ?? []} />
-        </TabsContent>
 
         <TabsContent value="sheets" className="mt-4 space-y-4">
           {(() => {

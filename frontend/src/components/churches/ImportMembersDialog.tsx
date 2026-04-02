@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Upload, AlertTriangle, CheckCircle2, FileSpreadsheet } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, FileSpreadsheet } from 'lucide-react'
+// @ts-ignore
 import * as XLSX from 'xlsx'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
