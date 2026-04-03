@@ -2,15 +2,16 @@ import { Link } from 'react-router-dom'
 import { Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import type { Group } from '@/types/group'
+import type { ChurchGroup } from '@/types/church-group'
 
 interface Props {
-  group: Group
+  group: ChurchGroup
+  churchId: number
 }
 
-export function GroupCard({ group }: Props) {
+export function GroupCard({ group, churchId }: Props) {
   return (
-    <Link to={`/groups/${group.id}`}>
+    <Link to={`/groups/${group.id}?church=${churchId}`}>
       <Card className="transition-shadow hover:shadow-md">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
