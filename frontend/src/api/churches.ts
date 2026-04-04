@@ -4,11 +4,13 @@ import type {
   ChurchAdminMember,
   ChurchAdminPermissions,
   ChurchMember,
+  ChurchMpesaCredential,
   ChurchSheet,
   ChurchStats,
   CreateChurchPayload,
   MemberInvite,
   SheetsStatus,
+  SubmitMpesaCredentialsPayload,
   UpdateChurchPayload,
   AdminSlots,
 } from '@/types/church'
@@ -118,6 +120,19 @@ export const createMemberInvite = (
 
 export const cancelMemberInvite = (id: number, inviteId: number) =>
   apiClient.delete<ApiSuccess>(`/churches/${id}/invites/${inviteId}`).then((r) => r.data)
+
+export const getMpesaCredentials = (id: number) =>
+  apiClient
+    .get<ChurchMpesaCredential>(`/churches/${id}/mpesa-credentials`)
+    .then((r) => r.data)
+
+export const submitMpesaCredentials = (id: number, payload: SubmitMpesaCredentialsPayload) =>
+  apiClient
+    .post<{ message: string; shortcode: string; environment: string }>(
+      `/churches/${id}/mpesa-credentials`,
+      payload,
+    )
+    .then((r) => r.data)
 
 export const bulkAddChurchMembers = (
   id: number,

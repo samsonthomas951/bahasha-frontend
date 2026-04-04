@@ -126,3 +126,22 @@ export interface AdminSlots {
   total: number
   used: number
 }
+
+export interface ChurchMpesaCredential {
+  configured: boolean
+  id?: number
+  church_id?: number
+  shortcode?: string
+  environment?: 'sandbox' | 'production'
+  is_valid?: boolean
+  validated_at?: string
+  created_at?: string
+}
+
+export interface SubmitMpesaCredentialsPayload {
+  consumer_key: string
+  consumer_secret: string
+  passkey: string
+  shortcode: string
+  environment: 'sandbox' | 'production'
+}
