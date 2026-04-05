@@ -94,7 +94,11 @@ export default function AdminPage() {
             <Button
               size="sm"
               onClick={() => {
-                const url = `/api/v1/auth/google/authorize-sheets/redirect?callback_url=${encodeURIComponent(`${window.location.origin}/auth/google/callback`)}`
+                // Must bypass the Netlify proxy and hit the backend directly so
+                // the session cookie is set on api.samsonthomas.app — the same
+                // domain Google will redirect back to via GOOGLE_OAUTH_REDIRECT_URI.
+                const base = import.meta.env.VITE_BACKEND_URL ?? ''
+                const url = `${base}/api/v1/auth/google/authorize-sheets/redirect?callback_url=${encodeURIComponent(`${window.location.origin}/auth/google/callback`)}`
                 window.location.href = url
               }}
             >
