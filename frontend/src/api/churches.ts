@@ -128,7 +128,7 @@ export const getMpesaCredentials = (id: number) =>
 
 export const submitMpesaCredentials = (id: number, payload: SubmitMpesaCredentialsPayload) =>
   apiClient
-    .post<{ message: string; shortcode: string; environment: string }>(
+    .post<{ message: string; shortcode: string; environment: string; warning?: string }>(
       `/churches/${id}/mpesa-credentials`,
       payload,
     )
