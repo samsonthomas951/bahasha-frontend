@@ -532,8 +532,8 @@ export default function DonationFormPage() {
 
   // ── Form ───────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-svh bg-gradient-to-br from-green-950 to-green-800 md:flex md:items-center md:justify-center md:py-10">
-      <div className="w-full bg-white md:max-w-md md:rounded-2xl md:shadow-2xl">
+    <div className="min-h-svh bg-gradient-to-br from-green-950 to-green-800 flex items-start justify-center py-6 px-4 md:items-center md:py-10">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl">
         <div className="px-5 pb-8">
           {step === 1 ? (
             <Step1 church={church} onNext={handleNext} />
