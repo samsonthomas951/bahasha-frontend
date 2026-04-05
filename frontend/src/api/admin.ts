@@ -23,8 +23,16 @@ export interface UsersResponse {
   pages: number
 }
 
+export interface DriveStatus {
+  has_drive_auth: boolean
+  authorize_url: string
+}
+
 export const getSystemStats = () =>
   apiClient.get<SystemStats>('/admin/stats').then((r) => r.data)
+
+export const getDriveStatus = () =>
+  apiClient.get<DriveStatus>('/auth/google/drive-status').then((r) => r.data)
 
 export const listAllUsers = (page = 1, per_page = 20) =>
   apiClient
