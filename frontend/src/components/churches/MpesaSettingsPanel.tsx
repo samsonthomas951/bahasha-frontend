@@ -18,12 +18,21 @@ import {
 import { getMpesaCredentials, submitMpesaCredentials } from '@/api/churches'
 import type { SubmitMpesaCredentialsPayload } from '@/types/church'
 
+const SANDBOX_SHORTCODE = '174379'
+
 const schema = z.object({
   consumer_key:    z.string().min(1, 'Consumer key is required'),
   consumer_secret: z.string().min(1, 'Consumer secret is required'),
-  passkey:         z.string().min(1, 'Passkey is required'),
-  shortcode:       z.string().min(1, 'Shortcode is required'),
+  passkey:         z.string(),
+  shortcode:       z.string(),
   environment:     z.enum(['sandbox', 'production']),
+}).superRefine((data, ctx) => {
+  if (data.environment === 'production') {
+    if (!data.passkey.trim())
+      ctx.addIssue({ code: 'custom', path: ['passkey'], message: 'Passkey is required' })
+    if (!data.shortcode.trim())
+      ctx.addIssue({ code: 'custom', path: ['shortcode'], message: 'Shortcode is required' })
+  }
 })
 
 type FormValues = z.infer<typeof schema>
@@ -59,8 +68,8 @@ export function MpesaSettingsPanel({ churchId }: Props) {
       consumer_key:    '',
       consumer_secret: '',
       passkey:         '',
-      shortcode:       cred?.shortcode ?? '',
-      environment:     cred?.environment ?? 'production',
+      shortcode:       cred?.shortcode ?? SANDBOX_SHORTCODE,
+      environment:     cred?.environment ?? 'sandbox',
     },
   })
 
@@ -155,6 +164,7 @@ export function MpesaSettingsPanel({ churchId }: Props) {
             <Input
               id="shortcode"
               placeholder="e.g. 174379"
+              disabled={environment === 'sandbox'}
               {...register('shortcode')}
             />
             {errors.shortcode && (
@@ -166,7 +176,14 @@ export function MpesaSettingsPanel({ churchId }: Props) {
             <Label htmlFor="environment">Environment</Label>
             <Select
               value={environment}
-              onValueChange={(v) => setValue('environment', v as 'sandbox' | 'production')}
+              onValueChange={(v) => {
+                const env = v as 'sandbox' | 'production'
+                setValue('environment', env)
+                if (env === 'sandbox') {
+                  setValue('shortcode', SANDBOX_SHORTCODE)
+                  setValue('passkey', '')
+                }
+              }}
             >
               <SelectTrigger id="environment">
                 <SelectValue />
@@ -229,30 +246,32 @@ export function MpesaSettingsPanel({ churchId }: Props) {
           )}
         </div>
 
-        {/* Passkey */}
-        <div className="space-y-1.5">
-          <Label htmlFor="passkey">Passkey</Label>
-          <div className="relative">
-            <Input
-              id="passkey"
-              type={showPasskey ? 'text' : 'password'}
-              placeholder="Lipa Na M-Pesa passkey"
-              className="pr-10"
-              {...register('passkey')}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPasskey((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              tabIndex={-1}
-            >
-              {showPasskey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
+        {/* Passkey — production only */}
+        {environment === 'production' && (
+          <div className="space-y-1.5">
+            <Label htmlFor="passkey">Passkey</Label>
+            <div className="relative">
+              <Input
+                id="passkey"
+                type={showPasskey ? 'text' : 'password'}
+                placeholder="Lipa Na M-Pesa passkey"
+                className="pr-10"
+                {...register('passkey')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasskey((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                tabIndex={-1}
+              >
+                {showPasskey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            {errors.passkey && (
+              <p className="text-xs text-destructive">{errors.passkey.message}</p>
+            )}
           </div>
-          {errors.passkey && (
-            <p className="text-xs text-destructive">{errors.passkey.message}</p>
-          )}
-        </div>
+        )}
 
         {/* Feedback */}
         {apiError && (
