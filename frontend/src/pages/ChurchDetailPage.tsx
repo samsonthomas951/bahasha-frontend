@@ -60,7 +60,7 @@ export default function ChurchDetailPage() {
     queryFn: () => getSheetsStatus(id!),
     refetchInterval: (query) => {
       const s = query.state.data?.sheets_status
-      return s === 'completed' || s === 'failed' ? false : 3000
+      return s === 'completed' || s === 'failed' ? false : 10000
     },
     enabled: !!id,
   })

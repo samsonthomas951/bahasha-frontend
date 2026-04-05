@@ -15,7 +15,7 @@ export function SheetsStatusBadge({ churchId, initialStatus }: Props) {
     refetchInterval: (query) => {
       const status = query.state.data?.sheets_status
       if (status === 'completed' || status === 'failed') return false
-      return 3000
+      return 10000
     },
     enabled: initialStatus !== 'completed',
   })
