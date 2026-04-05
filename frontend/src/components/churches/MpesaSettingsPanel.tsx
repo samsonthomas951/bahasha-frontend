@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Eye, EyeOff, CheckCircle2, XCircle, RefreshCw } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, XCircle, RefreshCw, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -47,6 +47,7 @@ export function MpesaSettingsPanel({ churchId }: Props) {
   const [showPasskey, setShowPasskey] = useState(false)
   const [showKey, setShowKey] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [apiWarning, setApiWarning] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
   const credQuery = useQuery({
@@ -78,11 +79,12 @@ export function MpesaSettingsPanel({ churchId }: Props) {
   const saveMutation = useMutation({
     mutationFn: (payload: SubmitMpesaCredentialsPayload) =>
       submitMpesaCredentials(churchId, payload),
-    onSuccess: () => {
+    onSuccess: (data: { warning?: string }) => {
       qc.invalidateQueries({ queryKey: ['churches', churchId, 'mpesa-credentials'] })
       setApiError(null)
       setSuccess(true)
-      setTimeout(() => setSuccess(false), 4000)
+      setApiWarning(data?.warning ?? null)
+      setTimeout(() => setSuccess(false), 6000)
     },
     onError: (err: { response?: { data?: { error?: string; detail?: string } } }) => {
       const msg =
@@ -91,6 +93,7 @@ export function MpesaSettingsPanel({ churchId }: Props) {
         'Failed to save credentials. Please try again.'
       setApiError(msg)
       setSuccess(false)
+      setApiWarning(null)
     },
   })
 
@@ -283,6 +286,12 @@ export function MpesaSettingsPanel({ churchId }: Props) {
           <p className="text-sm text-green-700 rounded-md border border-green-300 bg-green-50 px-3 py-2 flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
             Credentials saved and validated successfully.
+          </p>
+        )}
+        {apiWarning && (
+          <p className="text-sm text-yellow-800 rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            {apiWarning}
           </p>
         )}
 
