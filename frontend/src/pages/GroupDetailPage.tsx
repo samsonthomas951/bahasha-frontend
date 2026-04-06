@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Trash2, Plus, UserPlus } from 'lucide-react'
+import { Trash2, Plus, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   getChurchGroupMembers,
   addChurchGroupMembers,
@@ -44,6 +44,8 @@ export default function GroupDetailPage() {
   const [pickerSearch, setPickerSearch] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
 
+  const [membersPage, setMembersPage] = useState(1)
+
   // ── Data queries ──────────────────────────────────────────────────────────
   const groupsQuery = useQuery({
     queryKey: ['church-groups', churchId],
@@ -53,11 +55,13 @@ export default function GroupDetailPage() {
   const group = groupsQuery.data?.find((g) => g.id === id)
 
   const membersQuery = useQuery({
-    queryKey: ['church-groups', churchId, id, 'members'],
-    queryFn: () => getChurchGroupMembers(churchId!, id),
+    queryKey: ['church-groups', churchId, id, 'members', membersPage],
+    queryFn: () => getChurchGroupMembers(churchId!, id, membersPage, 50),
     enabled: !!churchId,
   })
   const currentMembers = membersQuery.data?.members ?? []
+  const totalPages = membersQuery.data?.pages ?? 1
+  const totalMembers = membersQuery.data?.total ?? 0
   const currentPhones = useMemo(
     () => new Set(currentMembers.map((m) => m.phone_number)),
     [currentMembers],
@@ -273,6 +277,35 @@ export default function GroupDetailPage() {
                 )}
               </TableBody>
             </Table>
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>
+                Showing {(membersPage - 1) * 50 + 1}–{Math.min(membersPage * 50, totalMembers)} of {totalMembers} members
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setMembersPage((p) => p - 1)}
+                  disabled={membersPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="px-2">Page {membersPage} of {totalPages}</span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setMembersPage((p) => p + 1)}
+                  disabled={membersPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           )}
         </TabsContent>
 

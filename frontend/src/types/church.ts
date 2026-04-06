@@ -81,10 +81,6 @@ export interface CreateChurchPayload {
   email?: string
   logo_url?: string
   primary_color?: string
-  template_name?: string
-  template_language?: string
-  mpesa_shortcode?: string
-  mpesa_account_reference?: string
   admin_emails?: string[]
   setup_sheets?: boolean
 }

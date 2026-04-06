@@ -28,10 +28,6 @@ export function ChurchForm({ church, onSuccess }: Props) {
     email: church?.email ?? '',
     logo_url: church?.logo_url ?? '',
     primary_color: church?.primary_color ?? '#3B82F6',
-    template_name: church?.template_name ?? '',
-    template_language: church?.template_language ?? 'en',
-    mpesa_shortcode: church?.mpesa_shortcode ?? '',
-    mpesa_account_reference: church?.mpesa_account_reference ?? '',
     admin_emails: church?.admin_emails ?? [],
     setup_sheets: false,
   })
@@ -162,36 +158,6 @@ export function ChurchForm({ church, onSuccess }: Props) {
               placeholder="#3B82F6"
               className="font-mono"
             />
-          </div>
-        </div>
-      </div>
-
-      {/* M-Pesa */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">M-Pesa</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <Label htmlFor="mpesa_shortcode">Shortcode</Label>
-            <Input id="mpesa_shortcode" value={form.mpesa_shortcode} onChange={(e) => set('mpesa_shortcode', e.target.value)} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="mpesa_account_reference">Account Reference</Label>
-            <Input id="mpesa_account_reference" value={form.mpesa_account_reference} onChange={(e) => set('mpesa_account_reference', e.target.value)} />
-          </div>
-        </div>
-      </div>
-
-      {/* WhatsApp */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">WhatsApp</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <Label htmlFor="template_name">Template Name</Label>
-            <Input id="template_name" value={form.template_name} onChange={(e) => set('template_name', e.target.value)} placeholder="church_donation_template" />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="template_language">Template Language</Label>
-            <Input id="template_language" value={form.template_language} onChange={(e) => set('template_language', e.target.value)} placeholder="en" />
           </div>
         </div>
       </div>

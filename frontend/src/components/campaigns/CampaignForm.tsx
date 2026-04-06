@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select'
 import { createCampaign, getTemplates } from '@/api/campaigns'
 import { getChurch } from '@/api/churches'
+import { listChurchGroups } from '@/api/church-groups'
 import { useChurchStore } from '@/stores/churchStore'
 import type { CreateCampaignPayload, TargetAudience, WhatsAppTemplate, TemplateParams } from '@/types/campaign'
 
@@ -201,6 +202,12 @@ export function CampaignForm() {
     staleTime: 5 * 60 * 1000,
   })
 
+  const { data: groups } = useQuery({
+    queryKey: ['church-groups', activeChurchId],
+    queryFn: () => listChurchGroups(activeChurchId!),
+    enabled: !!activeChurchId,
+  })
+
   const [form, setForm] = useState<CreateCampaignPayload>({
     name: '',
     description: '',
@@ -210,9 +217,11 @@ export function CampaignForm() {
     recurring: false,
     send_report: false,
     custom_recipients: [],
+    group_ids: [],
   })
   const [selectedTemplate, setSelectedTemplate] = useState<WhatsAppTemplate | null>(null)
   const [customPhones, setCustomPhones] = useState('')
+  const [selectedGroups, setSelectedGroups] = useState<Set<number>>(new Set())
   const [params, setParams] = useState<TemplateParams>({})
 
   const set = <K extends keyof CreateCampaignPayload>(key: K, val: CreateCampaignPayload[K]) =>
@@ -241,6 +250,13 @@ export function CampaignForm() {
   const hasImageHeader = selectedTemplate?.components?.header?.type === 'IMAGE'
   const bodyHasVariable = selectedTemplate?.components?.body?.includes('{{') ?? false
 
+  const toggleGroup = (id: number) =>
+    setSelectedGroups((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+
   const mutation = useMutation({
     mutationFn: () => {
       const payload: CreateCampaignPayload = { ...form, template_params: params }
@@ -249,6 +265,9 @@ export function CampaignForm() {
           .split('\n')
           .map((l) => l.trim())
           .filter(Boolean)
+      }
+      if (form.target_audience === 'groups') {
+        payload.group_ids = Array.from(selectedGroups)
       }
       return createCampaign(payload)
     },
@@ -365,19 +384,54 @@ export function CampaignForm() {
           <Label>Target Audience</Label>
           <Select
             value={form.target_audience}
-            onValueChange={(v) => set('target_audience', v as TargetAudience)}
+            onValueChange={(v) => {
+              set('target_audience', v as TargetAudience)
+              setSelectedGroups(new Set())
+            }}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All users</SelectItem>
-              <SelectItem value="members">Members only</SelectItem>
-              <SelectItem value="visitors">Visitors only</SelectItem>
+              <SelectItem value="groups">Groups</SelectItem>
               <SelectItem value="custom">Custom list</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
+        {form.target_audience === 'groups' && (
+          <div className="space-y-2">
+            <Label>Select Groups</Label>
+            {!groups || groups.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No groups found. Create groups first.</p>
+            ) : (
+              <div className="rounded-md border divide-y">
+                {groups.map((g) => (
+                  <label
+                    key={g.id}
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/50"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedGroups.has(g.id)}
+                      onChange={() => toggleGroup(g.id)}
+                      className="h-4 w-4 rounded border"
+                    />
+                    <span className="flex-1 text-sm">
+                      {g.icon && <span className="mr-1">{g.icon}</span>}
+                      <span className="font-medium">{g.name}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{g.member_count} members</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+            {selectedGroups.size > 0 && (
+              <p className="text-xs text-muted-foreground">{selectedGroups.size} group{selectedGroups.size !== 1 ? 's' : ''} selected</p>
+            )}
+          </div>
+        )}
 
         {form.target_audience === 'custom' && (
           <div className="space-y-1">
@@ -411,7 +465,7 @@ export function CampaignForm() {
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>
             Cancel
           </Button>
-          <Button type="submit" disabled={mutation.isPending || !form.message_template}>
+          <Button type="submit" disabled={mutation.isPending || !form.message_template || (form.target_audience === 'groups' && selectedGroups.size === 0)}>
             {mutation.isPending ? 'Creating…' : 'Create Campaign'}
           </Button>
         </div>

@@ -1,5 +1,5 @@
 export type CampaignStatus = 'draft' | 'scheduled' | 'active' | 'sent' | 'sending' | 'completed' | 'failed' | 'cancelled'
-export type TargetAudience = 'all' | 'members' | 'visitors' | 'custom'
+export type TargetAudience = 'all' | 'members' | 'visitors' | 'custom' | 'groups'
 
 export interface Campaign {
   id: number
@@ -136,5 +136,6 @@ export interface CreateCampaignPayload {
   send_report?: boolean
   report_frequency?: string
   custom_recipients?: string[]
+  group_ids?: number[]
   template_params?: TemplateParams
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
@@ -23,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { useChurchStore } from '@/stores/churchStore'
-import type { Church, ChurchMember } from '@/types/church'
+import type { Church } from '@/types/church'
 
 export default function ChurchDetailPage() {
   const { churchId } = useParams<{ churchId: string }>()
@@ -32,6 +33,7 @@ export default function ChurchDetailPage() {
   const navigate = useNavigate()
   const qc = useQueryClient()
   const setActiveChurch = useChurchStore((s) => s.setActiveChurch)
+  const [membersPage, setMembersPage] = useState(1)
 
   const churchQuery = useQuery({
     queryKey: ['churches', id],
@@ -44,8 +46,8 @@ export default function ChurchDetailPage() {
     enabled: !!id,
   })
   const membersQuery = useQuery({
-    queryKey: ['churches', id, 'members', 1, 50],
-    queryFn: () => getChurchMembers(id!, 1, 50),
+    queryKey: ['churches', id, 'members', membersPage, 50],
+    queryFn: () => getChurchMembers(id!, membersPage, 50),
     enabled: !!id,
   })
   const sheetsQuery = useQuery({
@@ -165,7 +167,14 @@ export default function ChurchDetailPage() {
         </TabsContent>
 
         <TabsContent value="members" className="mt-4">
-          <MemberTable churchId={church.id} members={membersQuery.data?.members ?? ([] as ChurchMember[])} />
+          <MemberTable
+            churchId={church.id}
+            members={membersQuery.data?.members ?? []}
+            page={membersPage}
+            totalPages={membersQuery.data?.pages ?? 1}
+            total={membersQuery.data?.total ?? 0}
+            onPageChange={setMembersPage}
+          />
         </TabsContent>
 
         <TabsContent value="accounts" className="mt-4 space-y-3">

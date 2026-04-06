@@ -31,10 +31,11 @@ export const deleteChurchGroup = (churchId: number, groupId: number) =>
     .delete<ApiSuccess>(`/churches/${churchId}/groups/${groupId}`)
     .then((r) => r.data)
 
-export const getChurchGroupMembers = (churchId: number, groupId: number) =>
+export const getChurchGroupMembers = (churchId: number, groupId: number, page = 1, perPage = 50) =>
   apiClient
-    .get<{ members: ChurchGroupMember[]; group: ChurchGroup }>(
+    .get<{ members: ChurchGroupMember[]; group: ChurchGroup; total: number; page: number; pages: number }>(
       `/churches/${churchId}/groups/${groupId}/members`,
+      { params: { page, per_page: perPage } },
     )
     .then((r) => r.data)
 

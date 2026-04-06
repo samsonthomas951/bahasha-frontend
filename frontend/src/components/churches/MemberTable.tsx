@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Trash2, Plus, Upload } from 'lucide-react'
+import { Trash2, Plus, Upload, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -11,13 +11,20 @@ import type { ChurchMember } from '@/types/church'
 interface Props {
   churchId: number
   members: ChurchMember[]
+  page: number
+  totalPages: number
+  total: number
+  onPageChange: (page: number) => void
 }
 
-export function MemberTable({ churchId, members }: Props) {
+export function MemberTable({ churchId, members, page, totalPages, total, onPageChange }: Props) {
   const qc = useQueryClient()
   const [phone, setPhone] = useState('')
   const [name, setName] = useState('')
   const [importOpen, setImportOpen] = useState(false)
+
+  const PAGE_SIZE = 50
+  const pageMembers = members
 
   const addMutation = useMutation({
     mutationFn: () => addChurchMember(churchId, phone, name || undefined),
@@ -82,14 +89,14 @@ export function MemberTable({ churchId, members }: Props) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {members.length === 0 ? (
+          {pageMembers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} className="text-center text-muted-foreground">
                 No members assigned
               </TableCell>
             </TableRow>
           ) : (
-            members.map((m) => (
+            pageMembers.map((m) => (
               <TableRow key={m.phone_number}>
                 <TableCell className="font-mono text-sm">{m.phone_number}</TableCell>
                 <TableCell>{m.name ?? '—'}</TableCell>
@@ -110,6 +117,35 @@ export function MemberTable({ churchId, members }: Props) {
           )}
         </TableBody>
       </Table>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>
+            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total} members
+          </span>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onPageChange(page - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="px-2">Page {page} of {totalPages}</span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onPageChange(page + 1)}
+              disabled={page === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       <ImportMembersDialog
         churchId={churchId}
