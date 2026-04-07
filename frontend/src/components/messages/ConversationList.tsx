@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Search } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getConversations } from '@/api/messages'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ConversationItem } from './ConversationItem'
 import type { Conversation } from '@/types/message'
+
+const PER_PAGE = 50
 
 interface Props {
   activeConversationId: string | null
@@ -14,11 +17,20 @@ interface Props {
 
 export function ConversationList({ activeConversationId, onSelect }: Props) {
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['messages', 'conversations', { search }],
-    queryFn: () => getConversations({ search: search || undefined, per_page: 50 }),
+    queryKey: ['messages', 'conversations', { search, page }],
+    queryFn: () => getConversations({ search: search || undefined, per_page: PER_PAGE, page }),
   })
+
+  function handleSearch(value: string) {
+    setSearch(value)
+    setPage(1)
+  }
+
+  const total = data?.total ?? 0
+  const totalPages = data?.pages ?? 1
 
   return (
     <div className="flex h-full flex-col border-r">
@@ -29,7 +41,7 @@ export function ConversationList({ activeConversationId, onSelect }: Props) {
             placeholder="Search conversations…"
             className="pl-8"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
       </div>
@@ -59,6 +71,34 @@ export function ConversationList({ activeConversationId, onSelect }: Props) {
           ))
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="border-t px-3 py-2 flex flex-col gap-1">
+          <p className="text-xs text-muted-foreground">
+            Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, total)} of {total}
+          </p>
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground">Page {page} of {totalPages}</span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
