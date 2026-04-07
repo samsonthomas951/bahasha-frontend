@@ -17,15 +17,50 @@ import { createCampaign, getTemplates } from '@/api/campaigns'
 import { getChurch } from '@/api/churches'
 import { listChurchGroups } from '@/api/church-groups'
 import { useChurchStore } from '@/stores/churchStore'
-import type { CreateCampaignPayload, TargetAudience, WhatsAppTemplate, TemplateParams } from '@/types/campaign'
+import type { CreateCampaignPayload, TargetAudience, WhatsAppTemplate, TemplateParams, FormConfig } from '@/types/campaign'
+import { FormConfigBuilder } from '@/components/campaigns/FormConfigBuilder'
 
 const DEFAULT_IMAGE = 'https://images.examples.com/wp-content/uploads/2019/04/Tithes-and-Offerings-Church-Envelope.jpg'
 
-/** Replace {{1}}, {{2}}, … in a template body with the supplied values */
+/** Extract all variable keys from a template body — supports both {{1}} and {{member_name}} */
+function extractBodyVariables(body: string | null): string[] {
+  if (!body) return []
+  const seen = new Set<string>()
+  for (const m of body.matchAll(/\{\{([^}]+)\}\}/g)) seen.add(m[1].trim())
+  // Sort: numeric indices first in order, then named alphabetically
+  return [...seen].sort((a, b) => {
+    const na = parseInt(a), nb = parseInt(b)
+    if (!isNaN(na) && !isNaN(nb)) return na - nb
+    if (!isNaN(na)) return -1
+    if (!isNaN(nb)) return 1
+    return a.localeCompare(b)
+  })
+}
+
+/** Variables that are auto-filled — admin doesn't need to set them */
+const AUTO_VARS: Record<string, string> = {
+  member_name: '__auto_member_name__',
+  church_name: '__auto_church_name__',
+}
+
+/** Human-readable label for a variable key */
+function varLabel(key: string): string {
+  if (!isNaN(parseInt(key))) return `Variable {{${key}}}`
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/** Replace all {{key}} in body with display values from body_params */
 function resolveBody(body: string | null, params: TemplateParams): string | null {
   if (!body) return body
   let result = body
-  if (params.church_name) result = result.replace(/\{\{1\}\}/g, params.church_name)
+  const bp = params.body_params ?? {}
+  for (const [key, val] of Object.entries(bp)) {
+    let display: string
+    if (val === '__auto_member_name__') display = '[Recipient Name]'
+    else if (val === '__auto_church_name__') display = params.church_name || '[Church Name]'
+    else display = val || `{{${key}}}`
+    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), display)
+  }
   return result
 }
 
@@ -65,7 +100,7 @@ function WhatsAppPreview({ template, params }: PreviewProps) {
       {/* Phone frame — fixed 240 × 480 px */}
       <div
         className="relative rounded-[2.2rem] border-[5px] border-gray-800 bg-gray-800 shadow-2xl overflow-hidden flex flex-col"
-        style={{ width: 240, height: 480 }}
+        style={{ width: 240, minHeight: 480 }}
       >
         {/* Notch */}
         <div className="bg-gray-800 h-5 shrink-0 flex items-center justify-center">
@@ -132,7 +167,7 @@ function WhatsAppPreview({ template, params }: PreviewProps) {
             {/* Body */}
             {hasBody && (
               <div className="px-3 py-2">
-                <p className="text-[11px] text-gray-800 leading-snug whitespace-pre-wrap line-clamp-6">
+                <p className="text-[11px] text-gray-800 leading-snug whitespace-pre-wrap">
                   {resolvedBody}
                 </p>
               </div>
@@ -223,6 +258,7 @@ export function CampaignForm() {
   const [customPhones, setCustomPhones] = useState('')
   const [selectedGroups, setSelectedGroups] = useState<Set<number>>(new Set())
   const [params, setParams] = useState<TemplateParams>({})
+  const [formConfig, setFormConfig] = useState<FormConfig | null>(null)
 
   const set = <K extends keyof CreateCampaignPayload>(key: K, val: CreateCampaignPayload[K]) =>
     setForm((f) => ({ ...f, [key]: val }))
@@ -235,20 +271,34 @@ export function CampaignForm() {
     const tpl = templates?.find((t) => t.id === rawName) ?? null
     setSelectedTemplate(tpl)
 
-    // Pre-fill params from the active church when a template is selected
     const churchName = activeChurch?.name ?? ''
     const churchCode = activeChurch?.code ?? ''
     const imageUrl = activeChurch?.template_header_image || DEFAULT_IMAGE
+
+    const vars = extractBodyVariables(tpl?.components?.body ?? null)
+    const hasNamedMember = vars.includes('member_name')
+    const body_params: Record<string, string> = {}
+    vars.forEach((key) => {
+      if (AUTO_VARS[key]) {
+        body_params[key] = AUTO_VARS[key]
+      } else if (!isNaN(parseInt(key)) && !hasNamedMember && key === '1') {
+        // Single positional {{1}} with no named vars → treat as church name
+        body_params[key] = '__auto_church_name__'
+      } else {
+        body_params[key] = ''
+      }
+    })
 
     setParams({
       church_name: churchName,
       church_code: churchCode,
       image_url: tpl?.components?.header?.type === 'IMAGE' ? imageUrl : undefined,
+      body_params: vars.length > 0 ? body_params : undefined,
     })
   }
 
   const hasImageHeader = selectedTemplate?.components?.header?.type === 'IMAGE'
-  const bodyHasVariable = selectedTemplate?.components?.body?.includes('{{') ?? false
+  const bodyVariables = extractBodyVariables(selectedTemplate?.components?.body ?? null)
 
   const toggleGroup = (id: number) =>
     setSelectedGroups((prev) => {
@@ -259,7 +309,7 @@ export function CampaignForm() {
 
   const mutation = useMutation({
     mutationFn: () => {
-      const payload: CreateCampaignPayload = { ...form, template_params: params }
+      const payload: CreateCampaignPayload = { ...form, template_params: params, form_config: formConfig }
       if (form.target_audience === 'custom') {
         payload.custom_recipients = customPhones
           .split('\n')
@@ -328,6 +378,18 @@ export function CampaignForm() {
                   Template ID: <span className="font-mono">{selectedTemplate.id}</span>
                 </p>
               )}
+              <p className="text-xs text-muted-foreground">
+                Don't see the template you need?{' '}
+                <a
+                  href="https://mail.google.com/mail/?view=cm&to=support@samsonthomas.app&su=WhatsApp+Template+Request"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  contact support@samsonthomas.app
+                </a>{' '}
+                to request a new one.
+              </p>
             </>
           ) : (
             <Input
@@ -339,28 +401,44 @@ export function CampaignForm() {
           )}
         </div>
 
-        {/* ── Template parameter fields (only shown when template needs them) ── */}
-        {selectedTemplate && (hasImageHeader || bodyHasVariable) && (
-          <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+        {/* ── Template parameter fields (dynamic per template) ── */}
+        {selectedTemplate && (hasImageHeader || bodyVariables.length > 0) && (
+          <div className="rounded-md border bg-muted/30 p-4 space-y-4">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Template Parameters
             </p>
 
-            {/* Church name — fills {{1}} in body */}
-            {bodyHasVariable && (
-              <div className="space-y-1">
-                <Label htmlFor="tp-church">Church Name</Label>
-                <Input
-                  id="tp-church"
-                  value={params.church_name ?? ''}
-                  onChange={(e) => setParam('church_name', e.target.value)}
-                  placeholder="e.g. Grace Baptist Church"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Replaces <span className="font-mono">{'{{1}}'}</span> in the message body
-                </p>
+            {/* Auto-filled variables shown as info badges */}
+            {bodyVariables.some((k) => AUTO_VARS[k]) && (
+              <div className="flex flex-wrap gap-2">
+                {bodyVariables.filter((k) => AUTO_VARS[k]).map((key) => (
+                  <span key={key} className="inline-flex items-center gap-1 text-[11px] bg-blue-50 border border-blue-200 text-blue-700 px-2 py-1 rounded-full">
+                    <span className="font-mono">{`{{${key}}}`}</span>
+                    <span>— auto-filled ({key === 'member_name' ? "recipient's name" : 'your church name'})</span>
+                  </span>
+                ))}
               </div>
             )}
+
+            {/* Manual input only for variables the admin must fill */}
+            {bodyVariables.filter((k) => !AUTO_VARS[k]).map((key) => {
+              const val = params.body_params?.[key] ?? ''
+              return (
+                <div key={key} className="space-y-1">
+                  <Label>{varLabel(key)}</Label>
+                  <Input
+                    value={val}
+                    onChange={(e) =>
+                      setParams((p) => ({
+                        ...p,
+                        body_params: { ...(p.body_params ?? {}), [key]: e.target.value },
+                      }))
+                    }
+                    placeholder={`e.g. ${key === 'purpose_of_funds' ? 'Camp Meeting 2026' : 'Enter value…'}`}
+                  />
+                </div>
+              )
+            })}
 
             {/* Image URL — fills the image header */}
             {hasImageHeader && (
@@ -444,6 +522,8 @@ export function CampaignForm() {
             />
           </div>
         )}
+
+        <FormConfigBuilder value={formConfig} onChange={setFormConfig} />
 
         <div className="space-y-1">
           <Label htmlFor="c-schedule">Schedule (leave blank to save as draft)</Label>

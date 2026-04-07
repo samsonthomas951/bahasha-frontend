@@ -6,6 +6,7 @@ import type {
   CampaignAnalytics,
   CreateCampaignPayload,
   WhatsAppTemplate,
+  CampaignFormConfigResponse,
 } from '@/types/campaign'
 import type { PaginatedResponse } from '@/types/api'
 import type { Group } from '@/types/group'
@@ -73,3 +74,10 @@ export const getTemplates = () =>
 
 export const getCampaignGroups = () =>
   apiClient.get<Group[]>('/campaigns/groups').then((r) => r.data)
+
+/** Public fetch — no auth token. Uses raw fetch to bypass the apiClient interceptors
+ *  that add auth headers and redirect on 401. */
+export const getCampaignFormConfig = (
+  campaignId: string | number
+): Promise<CampaignFormConfigResponse> =>
+  fetch(`/api/v1/campaigns/${campaignId}/form-config`).then((r) => r.json())

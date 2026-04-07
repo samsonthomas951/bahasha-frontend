@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import type { FormConfig } from '@/types/campaign'
+import { getCampaignFormConfig } from '@/api/campaigns'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -73,7 +75,7 @@ function numericOnly(value: string): string {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function ChurchHeader({ church }: { church: ChurchPublic }) {
+function ChurchHeader({ church, title }: { church: ChurchPublic; title?: string }) {
   return (
     <div className="flex flex-col items-center pb-4 pt-6">
       {church.logo_url && (
@@ -86,23 +88,47 @@ function ChurchHeader({ church }: { church: ChurchPublic }) {
       <h1 className="text-lg font-semibold text-center" style={{ color: church.primary_color ?? '#2d5a2d' }}>
         {church.name}
       </h1>
-      <p className="mt-1 text-sm text-gray-500">{church.name} WhatsApp Envelope</p>
+      <p className="mt-1 text-sm text-gray-500">{title ?? `${church.name} WhatsApp Envelope`}</p>
     </div>
   )
 }
 
 // ─── Step 1 – Contributions ───────────────────────────────────────────────────
 
+const STATIC_FIELD_KEYS = ['tithe', 'offering', 'localBudget', 'churchDevelopment', 'evangelism']
+
 interface Step1Props {
   church: ChurchPublic
   onNext: (data: ContributionData) => void
+  formConfig?: FormConfig | null
 }
 
-function Step1({ church, onNext }: Step1Props) {
+function Step1({ church, onNext, formConfig }: Step1Props) {
   const [values, setValues] = useState({ tithe: '', offering: '', localBudget: '', churchDevelopment: '', evangelism: '' })
   const [dynamicCategories, setDynamicCategories] = useState<Record<string, DynamicCategory>>({})
-  const [dynamicInputs, setDynamicInputs] = useState<Array<{ uid: string; name: string; value: string }>>([])
+  const [dynamicInputs, setDynamicInputs] = useState<Array<{ uid: string; name: string; value: string; pinned?: boolean }>>([])
   const counterRef = useRef(0)
+
+  // Derive which static fields to show based on form config
+  const effectiveStaticFields = useMemo(() => {
+    if (!formConfig) return STATIC_FIELDS
+    const enabled = formConfig.fields
+      .filter((f) => f.enabled && STATIC_FIELD_KEYS.includes(f.key))
+      .map((f) => ({ id: f.key as typeof STATIC_FIELDS[number]['id'], label: f.label }))
+    return enabled.length > 0 ? enabled : [...STATIC_FIELDS]
+  }, [formConfig])
+
+  // When form config arrives, pre-populate pinned custom fields
+  useEffect(() => {
+    if (!formConfig) return
+    const presets = formConfig.fields
+      .filter((f) => f.enabled && !STATIC_FIELD_KEYS.includes(f.key))
+      .map((f, i) => ({ uid: `${f.key}_preset_${i}`, name: f.label, value: '', pinned: true as const }))
+    if (presets.length > 0) {
+      setDynamicInputs(presets)
+      setDynamicCategories(Object.fromEntries(presets.map((p) => [p.uid, { name: p.name, amount: 0 }])))
+    }
+  }, [formConfig])
 
   function handleStaticInput(id: keyof typeof values, raw: string) {
     setValues((prev) => ({ ...prev, [id]: numericOnly(raw) }))
@@ -162,9 +188,9 @@ function Step1({ church, onNext }: Step1Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <ChurchHeader church={church} />
+      <ChurchHeader church={church} title={formConfig?.title} />
 
-      {STATIC_FIELDS.map(({ id, label }) => (
+      {effectiveStaticFields.map(({ id, label }) => (
         <input
           key={id}
           type="text"
@@ -176,7 +202,7 @@ function Step1({ church, onNext }: Step1Props) {
         />
       ))}
 
-      {dynamicInputs.map(({ uid, name, value }) => (
+      {dynamicInputs.map(({ uid, name, value, pinned }) => (
         <div key={uid} className="flex items-center gap-2">
           <input
             type="text"
@@ -186,26 +212,30 @@ function Step1({ church, onNext }: Step1Props) {
             onChange={(e) => handleDynamicInput(uid, e.target.value)}
             className={inputCls}
           />
-          <button
-            type="button"
-            onClick={() => removeCategory(uid)}
-            className="shrink-0 rounded-lg bg-red-500 px-3 py-4 text-white hover:bg-red-600 active:scale-95 transition-all"
-          >
-            ×
-          </button>
+          {!pinned && (
+            <button
+              type="button"
+              onClick={() => removeCategory(uid)}
+              className="shrink-0 rounded-lg bg-red-500 px-3 py-4 text-white hover:bg-red-600 active:scale-95 transition-all"
+            >
+              ×
+            </button>
+          )}
         </div>
       ))}
 
-      <select onChange={handleCategorySelect} className={selectCls} defaultValue="">
-        <option value="" disabled>
-          Add category…
-        </option>
-        {EXTRA_OPTIONS.map((o) => (
-          <option key={o} value={o}>
-            {o}
+      {!formConfig && (
+        <select onChange={handleCategorySelect} className={selectCls} defaultValue="">
+          <option value="" disabled>
+            Add category…
           </option>
-        ))}
-      </select>
+          {EXTRA_OPTIONS.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      )}
 
       <button
         type="submit"
@@ -224,11 +254,12 @@ interface Step2Props {
   church: ChurchPublic
   data: ContributionData
   onBack: () => void
+  formConfig?: FormConfig | null
 }
 
 type PayStatus = 'idle' | 'processing' | 'success' | 'error'
 
-function Step2({ church, data, onBack }: Step2Props) {
+function Step2({ church, data, onBack, formConfig }: Step2Props) {
   const [name, setName] = useState(() => localStorage.getItem('nameStored') ?? '')
   const [memberStatus, setMemberStatus] = useState<'member' | 'visitor'>('member')
   const [phone, setPhone] = useState(() => localStorage.getItem('mpesaNumberStored') ?? '')
@@ -237,13 +268,12 @@ function Step2({ church, data, onBack }: Step2Props) {
   const [message, setMessage] = useState('')
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const staticRows = [
-    { label: 'Tithe', amount: data.tithe },
-    { label: 'Offering', amount: data.offering },
-    { label: 'Local Church Budget', amount: data.localBudget },
-    { label: 'Church Development', amount: data.churchDevelopment },
-    { label: 'Evangelism', amount: data.evangelism },
-  ].filter((r) => r.amount > 0)
+  const staticRows = STATIC_FIELDS
+    .map((f) => {
+      const label = formConfig?.fields.find((cf) => cf.key === f.id)?.label ?? f.label
+      return { label, amount: data[f.id as keyof ContributionData] as number }
+    })
+    .filter((r) => r.amount > 0)
 
   const dynamicRows = Object.values(data.dynamicCategories).filter((c) => c.amount > 0)
 
@@ -459,12 +489,13 @@ function Step2({ church, data, onBack }: Step2Props) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function DonationFormPage() {
-  const { churchCode } = useParams<{ churchCode: string }>()
+  const { churchCode, campaignId } = useParams<{ churchCode: string; campaignId?: string }>()
   const [church, setChurch] = useState<ChurchPublic | null>(null)
   const [loadState, setLoadState] = useState<'loading' | 'error' | 'ready'>('loading')
   const [errorMsg, setErrorMsg] = useState('')
   const [step, setStep] = useState<1 | 2>(1)
   const [contributionData, setContributionData] = useState<ContributionData | null>(null)
+  const [formConfig, setFormConfig] = useState<FormConfig | null>(null)
 
   useEffect(() => {
     if (!churchCode) {
@@ -490,6 +521,17 @@ export default function DonationFormPage() {
         setLoadState('error')
       })
   }, [churchCode])
+
+  useEffect(() => {
+    if (!campaignId) return
+    getCampaignFormConfig(campaignId)
+      .then((json) => {
+        if (json.success && json.form_config && Array.isArray(json.form_config.fields)) {
+          setFormConfig(json.form_config)
+        }
+      })
+      .catch(() => {}) // non-fatal: falls back to default form
+  }, [campaignId])
 
   function handleNext(data: ContributionData) {
     setContributionData(data)
@@ -536,9 +578,9 @@ export default function DonationFormPage() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl">
         <div className="px-5 pb-8">
           {step === 1 ? (
-            <Step1 church={church} onNext={handleNext} />
+            <Step1 church={church} onNext={handleNext} formConfig={formConfig} />
           ) : (
-            <Step2 church={church} data={contributionData!} onBack={handleBack} />
+            <Step2 church={church} data={contributionData!} onBack={handleBack} formConfig={formConfig} />
           )}
         </div>
       </div>

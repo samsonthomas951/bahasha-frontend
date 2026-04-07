@@ -19,6 +19,7 @@ const ChurchNewPage = lazy(() => import('@/pages/ChurchNewPage'))
 const MessagesPage = lazy(() => import('@/pages/MessagesPage'))
 const CampaignsPage = lazy(() => import('@/pages/CampaignsPage'))
 const CampaignDetailPage = lazy(() => import('@/pages/CampaignDetailPage'))
+const CampaignAnalyticsPage = lazy(() => import('@/pages/CampaignAnalyticsPage'))
 const GroupsPage = lazy(() => import('@/pages/GroupsPage'))
 const GroupDetailPage = lazy(() => import('@/pages/GroupDetailPage'))
 const DonationsPage = lazy(() => import('@/pages/DonationsPage'))
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
           <Route path="/form/:churchCode" element={<DonationFormPage />} />
+          <Route path="/form/:churchCode/:campaignId" element={<DonationFormPage />} />
 
           {/* All authenticated users — AppShell wraps everything */}
           <Route element={<ProtectedRoute />}>
@@ -78,6 +80,7 @@ export default function App() {
               <Route path="/churches/:churchId" element={<ChurchDetailPage />} />
               <Route path="/messages" element={<MessagesPage />} />
               <Route path="/campaigns" element={<CampaignsPage />} />
+              <Route path="/campaigns/analytics" element={<CampaignAnalyticsPage />} />
               <Route path="/campaigns/:campaignId" element={<CampaignDetailPage />} />
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/groups/:groupId" element={<GroupDetailPage />} />

@@ -1,6 +1,26 @@
 export type CampaignStatus = 'draft' | 'scheduled' | 'active' | 'sent' | 'sending' | 'completed' | 'failed' | 'cancelled'
 export type TargetAudience = 'all' | 'members' | 'visitors' | 'custom' | 'groups'
 
+export interface FormConfigField {
+  /** 'tithe' | 'offering' | 'localBudget' | 'churchDevelopment' | 'evangelism' | any custom string */
+  key: string
+  label: string
+  enabled: boolean
+}
+
+export interface FormConfig {
+  /** Overrides the default "Church Name WhatsApp Envelope" subtitle shown on the form */
+  title?: string
+  fields: FormConfigField[]
+}
+
+export interface CampaignFormConfigResponse {
+  success: boolean
+  campaign_id: number
+  campaign_name: string
+  form_config: FormConfig | null
+}
+
 export interface Campaign {
   id: number
   name: string
@@ -23,6 +43,7 @@ export interface Campaign {
   creator_id?: number
   created_at?: string
   completed_at?: string
+  form_config?: FormConfig | null
 }
 
 export interface CampaignRecipient {
@@ -124,6 +145,9 @@ export interface TemplateParams {
   church_name?: string
   church_code?: string
   image_url?: string
+  /** Positional body variables keyed by index ("1", "2", …).
+   *  Special value "__auto_member_name__" means "fill with recipient's name at send time". */
+  body_params?: Record<string, string>
 }
 
 export interface CreateCampaignPayload {
@@ -138,4 +162,5 @@ export interface CreateCampaignPayload {
   custom_recipients?: string[]
   group_ids?: number[]
   template_params?: TemplateParams
+  form_config?: FormConfig | null
 }
