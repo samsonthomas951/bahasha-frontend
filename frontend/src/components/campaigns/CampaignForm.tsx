@@ -191,9 +191,8 @@ function WhatsAppPreview({ template, params }: PreviewProps) {
                 {components.buttons.map((btn, i) => (
                   <div
                     key={i}
-                    className={`py-1.5 px-3 text-center text-[11px] text-[#128C7E] font-medium ${
-                      i < components.buttons.length - 1 ? 'border-b border-gray-100' : ''
-                    }`}
+                    className={`py-1.5 px-3 text-center text-[11px] text-[#128C7E] font-medium ${i < components.buttons.length - 1 ? 'border-b border-gray-100' : ''
+                      }`}
                   >
                     {btn.text}
                   </div>
@@ -476,6 +475,10 @@ export function CampaignForm() {
               <SelectItem value="custom">Custom list</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-muted-foreground mt-1">
+            Trial plan: campaigns are limited to 50 recipients. Use a{' '}
+            <strong>Custom</strong> list to target a specific group.
+          </p>
         </div>
 
         {form.target_audience === 'groups' && (
@@ -537,7 +540,8 @@ export function CampaignForm() {
 
         {mutation.isError && (
           <p className="text-sm text-destructive">
-            {mutation.error instanceof Error ? mutation.error.message : 'Failed to create campaign'}
+            {(mutation.error as any)?.response?.data?.message
+              ?? (mutation.error instanceof Error ? mutation.error.message : 'Failed to create campaign')}
           </p>
         )}
 
