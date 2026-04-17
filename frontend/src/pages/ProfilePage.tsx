@@ -12,6 +12,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, h) => {
   const period = h < 12 ? 'AM' : 'PM'
@@ -20,7 +30,7 @@ const HOUR_OPTIONS = Array.from({ length: 24 }, (_, h) => {
 })
 
 export default function ProfilePage() {
-  const { user, updateProfileMutation, changePasswordMutation } = useAuth()
+  const { user, updateProfileMutation, changePasswordMutation, deleteAccountMutation } = useAuth()
 
   const [reportFrequency, setReportFrequency] = useState(user?.report_frequency ?? 'weekly')
   const [dispatchHour, setDispatchHour] = useState<number>(user?.report_dispatch_hour ?? 16)
@@ -34,6 +44,9 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
+
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -201,6 +214,56 @@ export default function ProfilePage() {
                 {updateProfileMutation.isPending ? 'Saving…' : 'Save Changes'}
               </Button>
             </form>
+          </CardContent>
+        </Card>
+        <Card className="border-destructive/40">
+          <CardHeader>
+            <CardTitle className="text-base text-destructive">Delete Account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Permanently deletes your account, all churches you own, their Google Sheets, members, donations, and campaigns. This cannot be undone.
+            </p>
+            <Dialog open={deleteDialogOpen} onOpenChange={(open) => { setDeleteDialogOpen(open); if (!open) setDeletePassword('') }}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" size="sm">Delete My Account</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This will permanently erase your account and all associated data — churches, Google Sheets, members, donations, and campaigns. There is no recovery.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-1 py-2">
+                  <Label htmlFor="delete-password">Confirm your password</Label>
+                  <Input
+                    id="delete-password"
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="Enter your password"
+                  />
+                </div>
+                {deleteAccountMutation.isError && (
+                  <p className="text-sm text-destructive">
+                    {(deleteAccountMutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Failed to delete account'}
+                  </p>
+                )}
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button
+                    variant="destructive"
+                    disabled={deleteAccountMutation.isPending}
+                    onClick={() => deleteAccountMutation.mutate(deletePassword || undefined)}
+                  >
+                    {deleteAccountMutation.isPending ? 'Deleting…' : 'Yes, delete everything'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>

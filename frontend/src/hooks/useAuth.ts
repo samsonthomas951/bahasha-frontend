@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { changePassword, getProfile, login, logout, updateProfile } from '@/api/auth'
+import { changePassword, deleteAccount, getProfile, login, logout, updateProfile } from '@/api/auth'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/authStore'
 import { useChurchStore } from '@/stores/churchStore'
@@ -41,6 +41,16 @@ export function useAuth() {
     mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
   })
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: (password?: string) => deleteAccount(password),
+    onSuccess: () => {
+      clearAuth()
+      clearActiveChurch()
+      queryClient.clear()
+      navigate('/login')
+    },
+  })
+
   return {
     isAuthenticated,
     user,
@@ -48,6 +58,7 @@ export function useAuth() {
     logoutMutation,
     updateProfileMutation,
     changePasswordMutation,
+    deleteAccountMutation,
   }
 }
 
