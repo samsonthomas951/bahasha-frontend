@@ -155,6 +155,7 @@ export interface CreateCampaignPayload {
   description?: string
   target_audience: TargetAudience
   message_template: string
+  template_language?: string
   scheduled_time?: string
   recurring?: boolean
   send_report?: boolean

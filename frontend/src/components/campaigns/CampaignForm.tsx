@@ -191,8 +191,9 @@ function WhatsAppPreview({ template, params }: PreviewProps) {
                 {components.buttons.map((btn, i) => (
                   <div
                     key={i}
-                    className={`py-1.5 px-3 text-center text-[11px] text-[#128C7E] font-medium ${i < components.buttons.length - 1 ? 'border-b border-gray-100' : ''
-                      }`}
+                    className={`py-1.5 px-3 text-center text-[11px] text-[#128C7E] font-medium ${
+                      i < components.buttons.length - 1 ? 'border-b border-gray-100' : ''
+                    }`}
                   >
                     {btn.text}
                   </div>
@@ -269,6 +270,7 @@ export function CampaignForm() {
     set('message_template', rawName)
     const tpl = templates?.find((t) => t.id === rawName) ?? null
     setSelectedTemplate(tpl)
+    set('template_language', tpl?.language ?? 'en_US')
 
     const churchName = activeChurch?.name ?? ''
     const churchCode = activeChurch?.code ?? ''
