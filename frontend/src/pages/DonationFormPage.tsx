@@ -115,7 +115,7 @@ function Step1({ church, onNext, formConfig }: Step1Props) {
     const enabled = formConfig.fields
       .filter((f) => f.enabled && STATIC_FIELD_KEYS.includes(f.key))
       .map((f) => ({ id: f.key as typeof STATIC_FIELDS[number]['id'], label: f.label }))
-    return enabled.length > 0 ? enabled : [...STATIC_FIELDS]
+    return enabled
   }, [formConfig])
 
   // When form config arrives, pre-populate pinned custom fields
