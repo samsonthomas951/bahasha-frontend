@@ -43,6 +43,9 @@ const AUTO_VARS: Record<string, string> = {
   church_name: '__auto_church_name__',
 }
 
+const isAutoValue = (val: string) =>
+  val === '__auto_member_name__' || val === '__auto_church_name__'
+
 /** Human-readable label for a variable key */
 function varLabel(key: string): string {
   if (!isNaN(parseInt(key))) return `Variable {{${key}}}`
@@ -409,20 +412,8 @@ export function CampaignForm() {
               Template Parameters
             </p>
 
-            {/* Auto-filled variables shown as info badges */}
-            {bodyVariables.some((k) => AUTO_VARS[k]) && (
-              <div className="flex flex-wrap gap-2">
-                {bodyVariables.filter((k) => AUTO_VARS[k]).map((key) => (
-                  <span key={key} className="inline-flex items-center gap-1 text-[11px] bg-blue-50 border border-blue-200 text-blue-700 px-2 py-1 rounded-full">
-                    <span className="font-mono">{`{{${key}}}`}</span>
-                    <span>— auto-filled ({key === 'member_name' ? "recipient's name" : 'your church name'})</span>
-                  </span>
-                ))}
-              </div>
-            )}
-
             {/* Manual input only for variables the admin must fill */}
-            {bodyVariables.filter((k) => !AUTO_VARS[k]).map((key) => {
+            {bodyVariables.filter((k) => !isAutoValue(params.body_params?.[k] ?? '')).map((key) => {
               const val = params.body_params?.[key] ?? ''
               return (
                 <div key={key} className="space-y-1">
