@@ -23,7 +23,7 @@ export function CampaignCard({ campaign, churchCode }: Props) {
   })
 
   const donationUrl = churchCode
-    ? `${window.location.origin}/form/${churchCode}`
+    ? `${window.location.origin}/form/${churchCode}/${campaign.id}`
     : null
 
   function copyUrl() {
