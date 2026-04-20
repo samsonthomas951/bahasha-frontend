@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { Smartphone, Image, Video, FileText, CheckCheck } from 'lucide-react'
+import { Smartphone, Image, Video, FileText, CheckCheck, Clock, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -221,6 +221,111 @@ function WhatsAppPreview({ template, params }: PreviewProps) {
   )
 }
 
+// ─── Duration picker ─────────────────────────────────────────────────────────
+
+const DURATION_PRESETS = [
+  { label: '15 min', minutes: 15 },
+  { label: '1 hr',   minutes: 60 },
+  { label: '6 hrs',  minutes: 360 },
+  { label: '1 day',  minutes: 1440 },
+  { label: '3 days', minutes: 4320 },
+  { label: '5 days', minutes: 7200 },
+  { label: '1 week', minutes: 10080 },
+  { label: '2 weeks',minutes: 20160 },
+] as const
+
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  if (minutes < 1440) {
+    const h = minutes / 60
+    return h === Math.floor(h) ? `${h} hr${h !== 1 ? 's' : ''}` : `${(minutes / 60).toFixed(1)} hrs`
+  }
+  const d = minutes / 1440
+  return d === Math.floor(d) ? `${d} day${d !== 1 ? 's' : ''}` : `${(minutes / 1440).toFixed(1)} days`
+}
+
+interface DurationPickerProps {
+  value: number | undefined
+  onChange: (minutes: number | undefined) => void
+}
+
+function DurationPicker({ value, onChange }: DurationPickerProps) {
+  const preset = DURATION_PRESETS.find((p) => p.minutes === value)
+  const isCustom = value !== undefined && !preset
+  const [customVal, setCustomVal] = useState('')
+  const [customUnit, setCustomUnit] = useState<'minutes' | 'hours' | 'days'>('days')
+
+  function applyCustom(val: string, unit: typeof customUnit) {
+    const n = parseFloat(val)
+    if (!val || isNaN(n) || n <= 0) { onChange(undefined); return }
+    const map = { minutes: 1, hours: 60, days: 1440 }
+    onChange(Math.round(n * map[unit]))
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {DURATION_PRESETS.map((p) => (
+          <button
+            key={p.minutes}
+            type="button"
+            onClick={() => { onChange(p.minutes); setCustomVal('') }}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors
+              ${value === p.minutes
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-foreground border-border hover:bg-muted'
+              }`}
+          >
+            {p.label}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => { onChange(undefined); setCustomVal('') }}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors
+            ${isCustom
+              ? 'bg-primary text-primary-foreground border-primary'
+              : 'bg-background text-foreground border-border hover:bg-muted'
+            }`}
+        >
+          Custom
+        </button>
+      </div>
+
+      {isCustom && (
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            min="1"
+            step="1"
+            value={customVal}
+            onChange={(e) => { setCustomVal(e.target.value); applyCustom(e.target.value, customUnit) }}
+            placeholder="e.g. 10"
+            className="w-28"
+          />
+          <select
+            value={customUnit}
+            onChange={(e) => { const u = e.target.value as typeof customUnit; setCustomUnit(u); applyCustom(customVal, u) }}
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          >
+            <option value="minutes">minutes</option>
+            <option value="hours">hours</option>
+            <option value="days">days</option>
+          </select>
+        </div>
+      )}
+
+      {value !== undefined && (
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <Clock className="h-3 w-3" />
+          Campaign runs for <strong className="text-foreground">{formatDuration(value)}</strong>
+          {' '}— a report will be emailed to you when it ends.
+        </p>
+      )}
+    </div>
+  )
+}
+
 // ─── Main form ────────────────────────────────────────────────────────────────
 
 export function CampaignForm() {
@@ -252,8 +357,9 @@ export function CampaignForm() {
     target_audience: 'all',
     message_template: '',
     scheduled_time: '',
+    campaign_duration_minutes: undefined,
     recurring: false,
-    send_report: false,
+    send_report: true,
     custom_recipients: [],
     group_ids: [],
   })
@@ -529,7 +635,46 @@ export function CampaignForm() {
             value={form.scheduled_time}
             onChange={(e) => set('scheduled_time', e.target.value)}
           />
+          <p className="text-xs text-muted-foreground">
+            Leave blank to create a draft — you can launch it manually later.
+          </p>
         </div>
+
+        {/* Campaign duration */}
+        <div className="space-y-2">
+          <Label className="flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+            Campaign Duration
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            How long should this campaign run? After this period, your analytics report will be compiled and emailed to you.
+          </p>
+          <DurationPicker
+            value={form.campaign_duration_minutes}
+            onChange={(m) => set('campaign_duration_minutes', m)}
+          />
+        </div>
+
+        {/* Report notification */}
+        {form.campaign_duration_minutes !== undefined && (
+          <div className="flex items-start gap-3 rounded-lg border border-blue-100 bg-blue-50 p-4">
+            <Mail className="h-4 w-4 mt-0.5 text-blue-500 shrink-0" />
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-medium text-blue-900">Email report when campaign ends</p>
+              <p className="text-xs text-blue-700">
+                After {formatDuration(form.campaign_duration_minutes)}, we'll email you a full analytics report — messages sent, delivered, read, and total donations raised.
+              </p>
+            </div>
+            <label className="flex items-center cursor-pointer shrink-0">
+              <input
+                type="checkbox"
+                checked={form.send_report ?? true}
+                onChange={(e) => set('send_report', e.target.checked)}
+                className="h-4 w-4 rounded border"
+              />
+            </label>
+          </div>
+        )}
 
         {mutation.isError && (
           <p className="text-sm text-destructive">

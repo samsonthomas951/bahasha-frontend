@@ -29,6 +29,8 @@ export interface Campaign {
   target_audience: TargetAudience
   message_template?: string
   scheduled_time?: string
+  campaign_duration_minutes?: number
+  end_time?: string
   recurring?: boolean
   status: CampaignStatus
   total_recipients: number
@@ -157,6 +159,7 @@ export interface CreateCampaignPayload {
   message_template: string
   template_language?: string
   scheduled_time?: string
+  campaign_duration_minutes?: number
   recurring?: boolean
   send_report?: boolean
   report_frequency?: string
