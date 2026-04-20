@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Send } from 'lucide-react'
+import { Send, Link2, Copy, Check } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CampaignStatusBadge } from './CampaignStatusBadge'
@@ -9,14 +10,28 @@ import type { Campaign } from '@/types/campaign'
 
 interface Props {
   campaign: Campaign
+  churchCode?: string
 }
 
-export function CampaignCard({ campaign }: Props) {
+export function CampaignCard({ campaign, churchCode }: Props) {
   const qc = useQueryClient()
+  const [copied, setCopied] = useState(false)
+
   const sendMutation = useMutation({
     mutationFn: () => sendCampaign(campaign.id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['campaigns'] }),
   })
+
+  const donationUrl = churchCode
+    ? `${window.location.origin}/form/${churchCode}`
+    : null
+
+  function copyUrl() {
+    if (!donationUrl) return
+    navigator.clipboard.writeText(donationUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <Card>
@@ -43,6 +58,29 @@ export function CampaignCard({ campaign }: Props) {
             <dd className="font-medium">{campaign.messages_delivered}</dd>
           </div>
         </dl>
+
+        {donationUrl && (
+          <div className="flex items-center gap-1.5 rounded-md border border-dashed px-2.5 py-1.5 text-xs text-muted-foreground">
+            <Link2 className="h-3 w-3 shrink-0 text-primary" />
+            <a
+              href={donationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 truncate font-mono text-[11px] text-primary hover:underline"
+            >
+              {donationUrl.replace(/^https?:\/\//, '')}
+            </a>
+            <button
+              type="button"
+              onClick={copyUrl}
+              className="shrink-0 rounded p-0.5 hover:bg-muted"
+              title="Copy donation URL"
+            >
+              {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+            </button>
+          </div>
+        )}
+
         {campaign.status === 'draft' && (
           <Button
             size="sm"
