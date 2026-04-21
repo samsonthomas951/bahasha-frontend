@@ -52,11 +52,8 @@ export interface ChurchStats {
   church_id: number
   church_name: string
   user_count: number
-  total_users: number
   donation_count: number
-  total_donations: number
   total_amount: number
-  total_donation_amount: number
   average_donation: number
   sheets_initialized: boolean
   sheets_status: string

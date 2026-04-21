@@ -143,9 +143,9 @@ export default function ChurchDetailPage() {
               ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24" />)
               : statsQuery.data && (
                   <>
-                    <StatCard title="Users" value={statsQuery.data.total_users} />
-                    <StatCard title="Donations" value={statsQuery.data.total_donations} />
-                    <StatCard title="Total Amount" value={formatCurrency(statsQuery.data.total_donation_amount)} />
+                    <StatCard title="Users" value={statsQuery.data.user_count} />
+                    <StatCard title="Donations" value={statsQuery.data.donation_count} />
+                    <StatCard title="Total Amount" value={formatCurrency(statsQuery.data.total_amount)} />
                     <StatCard title="Avg Donation" value={formatCurrency(statsQuery.data.average_donation)} />
                   </>
                 )}
