@@ -255,11 +255,12 @@ interface Step2Props {
   data: ContributionData
   onBack: () => void
   formConfig?: FormConfig | null
+  campaignId?: string
 }
 
 type PayStatus = 'idle' | 'processing' | 'success' | 'error'
 
-function Step2({ church, data, onBack, formConfig }: Step2Props) {
+function Step2({ church, data, onBack, formConfig, campaignId }: Step2Props) {
   const [name, setName] = useState(() => localStorage.getItem('nameStored') ?? '')
   const [memberStatus, setMemberStatus] = useState<'member' | 'visitor'>('member')
   const [phone, setPhone] = useState(() => localStorage.getItem('mpesaNumberStored') ?? '')
@@ -348,6 +349,7 @@ function Step2({ church, data, onBack, formConfig }: Step2Props) {
           name,
           memberStatus,
           churchId: church.id,
+          campaignId: campaignId ? parseInt(campaignId) : undefined,
           contributionData: data,
           isAnonymous,
         }),
@@ -580,7 +582,7 @@ export default function DonationFormPage() {
           {step === 1 ? (
             <Step1 church={church} onNext={handleNext} formConfig={formConfig} />
           ) : (
-            <Step2 church={church} data={contributionData!} onBack={handleBack} formConfig={formConfig} />
+            <Step2 church={church} data={contributionData!} onBack={handleBack} formConfig={formConfig} campaignId={campaignId} />
           )}
         </div>
       </div>
