@@ -1,11 +1,22 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Send, Link2, Copy, Check } from 'lucide-react'
+import { Send, Link2, Copy, Check, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { CampaignStatusBadge } from './CampaignStatusBadge'
-import { sendCampaign } from '@/api/campaigns'
+import { sendCampaign, deleteCampaign } from '@/api/campaigns'
 import type { Campaign } from '@/types/campaign'
 
 interface Props {
@@ -19,6 +30,11 @@ export function CampaignCard({ campaign, churchCode }: Props) {
 
   const sendMutation = useMutation({
     mutationFn: () => sendCampaign(campaign.id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['campaigns'] }),
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteCampaign(campaign.id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['campaigns'] }),
   })
 
@@ -81,17 +97,47 @@ export function CampaignCard({ campaign, churchCode }: Props) {
           </div>
         )}
 
-        {campaign.status === 'draft' && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => sendMutation.mutate()}
-            disabled={sendMutation.isPending}
-          >
-            <Send className="mr-1.5 h-3.5 w-3.5" />
-            {sendMutation.isPending ? 'Sending…' : 'Send Now'}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {campaign.status === 'draft' && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => sendMutation.mutate()}
+              disabled={sendMutation.isPending}
+            >
+              <Send className="mr-1.5 h-3.5 w-3.5" />
+              {sendMutation.isPending ? 'Sending…' : 'Send Now'}
+            </Button>
+          )}
+
+          {campaign.status !== 'active' && campaign.status !== 'sending' && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete campaign?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete <strong>{campaign.name}</strong> and all its recipient data. This cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteMutation.mutate()}
+                    disabled={deleteMutation.isPending}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </CardContent>
     </Card>
   )

@@ -75,6 +75,9 @@ export const getTemplates = () =>
 export const getCampaignGroups = () =>
   apiClient.get<Group[]>('/campaigns/groups').then((r) => r.data)
 
+export const deleteCampaign = (campaignId: number) =>
+  apiClient.delete(`/campaigns/${campaignId}/delete`).then((r) => r.data)
+
 /** Public fetch — no auth token. Uses raw fetch to bypass the apiClient interceptors
  *  that add auth headers and redirect on 401. */
 export const getCampaignFormConfig = (
