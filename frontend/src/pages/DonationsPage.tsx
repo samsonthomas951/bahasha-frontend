@@ -46,10 +46,10 @@ export default function DonationsPage() {
           [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-lg" />)
         ) : stats ? (
           <>
-            <StatCard title="Total Donations" value={String(stats.total_donations)} />
-            <StatCard title="Total Amount" value={formatCurrency(stats.total_donation_amount)} />
+            <StatCard title="Total Donations" value={String(stats.donation_count)} />
+            <StatCard title="Total Amount" value={formatCurrency(stats.total_amount)} />
             <StatCard title="Average" value={formatCurrency(stats.average_donation)} />
-            <StatCard title="Total Members" value={String(stats.total_users)} />
+            <StatCard title="Total Members" value={String(stats.user_count)} />
           </>
         ) : null}
       </div>
