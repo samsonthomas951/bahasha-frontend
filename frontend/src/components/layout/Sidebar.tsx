@@ -9,6 +9,7 @@ import {
   User,
   ShieldCheck,
   LayoutTemplate,
+  ClipboardList,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/authStore'
@@ -21,6 +22,7 @@ const CHURCH_ADMIN_NAV = [
   { to: '/campaigns', label: 'Campaigns', icon: Megaphone, end: false },
   { to: '/groups', label: 'Groups', icon: Users, end: false },
   { to: '/donations', label: 'Donations', icon: HandCoins, end: false },
+  { to: '/manual-donations', label: 'Manual Entry', icon: ClipboardList, end: false },
   { to: '/profile', label: 'Profile', icon: User, end: true },
 ]
 

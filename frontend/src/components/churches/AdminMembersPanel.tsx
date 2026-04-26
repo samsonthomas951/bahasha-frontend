@@ -28,6 +28,7 @@ const PERMISSION_LABELS: { key: keyof ChurchAdminPermissions; label: string }[] 
   { key: 'can_send_campaigns',  label: 'Send campaigns'  },
   { key: 'can_view_analytics',  label: 'View analytics'  },
   { key: 'can_manage_admins',   label: 'Manage admins'   },
+  { key: 'can_record_manual_donations', label: 'Manual entry' },
 ]
 
 const DEFAULT_PERMISSIONS: ChurchAdminPermissions = {
@@ -36,6 +37,7 @@ const DEFAULT_PERMISSIONS: ChurchAdminPermissions = {
   can_send_campaigns:  false,
   can_view_analytics:  false,
   can_manage_admins:   false,
+  can_record_manual_donations: false,
 }
 
 interface Props {

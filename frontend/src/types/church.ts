@@ -90,6 +90,7 @@ export interface ChurchAdminPermissions {
   can_send_campaigns: boolean
   can_view_analytics: boolean
   can_manage_admins: boolean
+  can_record_manual_donations: boolean
 }
 
 export interface ChurchAdminMember extends ChurchAdminPermissions {

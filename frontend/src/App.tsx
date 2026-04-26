@@ -27,6 +27,7 @@ const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const TemplatesPage = lazy(() => import('@/pages/TemplatesPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const DonationFormPage = lazy(() => import('@/pages/DonationFormPage'))
+const ManualDonationPage = lazy(() => import('@/pages/ManualDonationPage'))
 
 function PageFallback() {
   return (
@@ -85,6 +86,7 @@ export default function App() {
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/groups/:groupId" element={<GroupDetailPage />} />
               <Route path="/donations" element={<DonationsPage />} />
+              <Route path="/manual-donations" element={<ManualDonationPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>
